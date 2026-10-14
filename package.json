@@ -1,0 +1,16 @@
+{
+  "name": "koyomi",
+  "version": "0.1.0",
+  "license": "MIT",
+  "module": "./priv/static/koyomi.esm.js",
+  "main": "./priv/static/koyomi.cjs.js",
+  "exports": {
+    ".": {
+      "import": "./priv/static/koyomi.esm.js",
+      "require": "./priv/static/koyomi.cjs.js"
+    }
+  },
+  "files": [
+    "priv/static"
+  ]
+}

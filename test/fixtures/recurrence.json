@@ -1,0 +1,1685 @@
+{
+  "about": "Recurrence rules that Koyomi.Recurrence (Elixir) and rrule.ts (TypeScript) must read, write, expand and describe the same way. 'occurrences' are the first 'limit' occurrences from 'start' (which is DTSTART, the first occurrence); 'describeFromStart' passes the start to the description.",
+  "valid": [
+    {
+      "input": "FREQ=DAILY;COUNT=5",
+      "canonical": "FREQ=DAILY;COUNT=5",
+      "rule": {
+        "freq": "daily",
+        "interval": 1,
+        "count": 5,
+        "until": null,
+        "byDay": [],
+        "byMonthDay": [],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-03-15",
+      "limit": 10,
+      "occurrences": ["2027-03-15", "2027-03-16", "2027-03-17", "2027-03-18", "2027-03-19"],
+      "describe": {
+        "en": "Daily, 5 times",
+        "pt": "Todos os dias, 5 vezes",
+        "es": "Todos los días, 5 veces",
+        "fr": "Tous les jours, 5 fois",
+        "de": "Täglich, 5-mal",
+        "it": "Ogni giorno, 5 volte",
+        "nl": "Dagelijks, 5 keer",
+        "ja": "毎日、5回"
+      }
+    },
+    {
+      "input": "FREQ=DAILY;INTERVAL=3;UNTIL=20270401",
+      "canonical": "FREQ=DAILY;INTERVAL=3;UNTIL=20270401",
+      "rule": {
+        "freq": "daily",
+        "interval": 3,
+        "count": null,
+        "until": "2027-04-01",
+        "byDay": [],
+        "byMonthDay": [],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-03-15",
+      "limit": 10,
+      "occurrences": ["2027-03-15", "2027-03-18", "2027-03-21", "2027-03-24", "2027-03-27", "2027-03-30"],
+      "describe": {
+        "en": "Every 3 days until 1 April 2027",
+        "pt": "A cada 3 dias até 1 de abril de 2027",
+        "es": "Cada 3 días hasta el 1 de abril de 2027",
+        "fr": "Tous les 3 jours jusqu'au 1er avril 2027",
+        "de": "Alle 3 Tage bis zum 1. April 2027",
+        "it": "Ogni 3 giorni fino al 1º aprile 2027",
+        "nl": "Om de 3 dagen tot en met 1 april 2027",
+        "ja": "3日ごと、2027年4月1日まで"
+      }
+    },
+    {
+      "input": "FREQ=DAILY;BYDAY=MO,TU,WE,TH,FR;COUNT=8",
+      "canonical": "FREQ=DAILY;BYDAY=MO,TU,WE,TH,FR;COUNT=8",
+      "rule": {
+        "freq": "daily",
+        "interval": 1,
+        "count": 8,
+        "until": null,
+        "byDay": [
+          {"ordinal": null, "weekday": 1},
+          {"ordinal": null, "weekday": 2},
+          {"ordinal": null, "weekday": 3},
+          {"ordinal": null, "weekday": 4},
+          {"ordinal": null, "weekday": 5}
+        ],
+        "byMonthDay": [],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-03-12",
+      "limit": 10,
+      "occurrences": ["2027-03-12", "2027-03-15", "2027-03-16", "2027-03-17", "2027-03-18", "2027-03-19", "2027-03-22", "2027-03-23"],
+      "describe": {
+        "en": "Daily on weekdays, 8 times",
+        "pt": "Todos os dias de segunda a sexta-feira, 8 vezes",
+        "es": "Todos los días de lunes a viernes, 8 veces",
+        "fr": "Tous les jours du lundi au vendredi, 8 fois",
+        "de": "Täglich von Montag bis Freitag, 8-mal",
+        "it": "Ogni giorno dal lunedì al venerdì, 8 volte",
+        "nl": "Dagelijks op werkdagen, 8 keer",
+        "ja": "毎日（平日）、8回"
+      }
+    },
+    {
+      "input": "FREQ=DAILY;BYMONTH=1,3;BYMONTHDAY=1,-1",
+      "canonical": "FREQ=DAILY;BYMONTH=1,3;BYMONTHDAY=1,-1",
+      "rule": {
+        "freq": "daily",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [],
+        "byMonthDay": [1, -1],
+        "byMonth": [1, 3],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-01-01",
+      "limit": 6,
+      "occurrences": ["2027-01-01", "2027-01-31", "2027-03-01", "2027-03-31", "2028-01-01", "2028-01-31"],
+      "describe": {
+        "en": "Daily on the 1st and the last day in January and March",
+        "pt": "Todos os dias no dia 1 e no último dia em janeiro e março",
+        "es": "Todos los días el día 1 y el último día en enero y marzo",
+        "fr": "Tous les jours le 1er et le dernier jour en janvier et mars",
+        "de": "Täglich am 1. und am letzten Tag im Januar und März",
+        "it": "Ogni giorno il giorno 1 e l'ultimo giorno a gennaio e marzo",
+        "nl": "Dagelijks op de 1e en de laatste dag in januari en maart",
+        "ja": "毎日（1月と3月の1日と末日）"
+      }
+    },
+    {
+      "input": "FREQ=DAILY;INTERVAL=2;BYMONTH=12",
+      "canonical": "FREQ=DAILY;INTERVAL=2;BYMONTH=12",
+      "rule": {
+        "freq": "daily",
+        "interval": 2,
+        "count": null,
+        "until": null,
+        "byDay": [],
+        "byMonthDay": [],
+        "byMonth": [12],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-11-29",
+      "limit": 5,
+      "occurrences": ["2027-11-29", "2027-12-01", "2027-12-03", "2027-12-05", "2027-12-07"],
+      "describe": {
+        "en": "Every 2 days in December",
+        "pt": "A cada 2 dias em dezembro",
+        "es": "Cada 2 días en diciembre",
+        "fr": "Tous les 2 jours en décembre",
+        "de": "Alle 2 Tage im Dezember",
+        "it": "Ogni 2 giorni a dicembre",
+        "nl": "Om de 2 dagen in december",
+        "ja": "2日ごと（12月）"
+      }
+    },
+    {
+      "input": "FREQ=DAILY;UNTIL=20270320",
+      "canonical": "FREQ=DAILY;UNTIL=20270320",
+      "rule": {
+        "freq": "daily",
+        "interval": 1,
+        "count": null,
+        "until": "2027-03-20",
+        "byDay": [],
+        "byMonthDay": [],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-03-18",
+      "limit": 10,
+      "occurrences": ["2027-03-18", "2027-03-19", "2027-03-20"],
+      "describe": {
+        "en": "Daily until 20 March 2027",
+        "pt": "Todos os dias até 20 de março de 2027",
+        "es": "Todos los días hasta el 20 de marzo de 2027",
+        "fr": "Tous les jours jusqu'au 20 mars 2027",
+        "de": "Täglich bis zum 20. März 2027",
+        "it": "Ogni giorno fino al 20 marzo 2027",
+        "nl": "Dagelijks tot en met 20 maart 2027",
+        "ja": "毎日、2027年3月20日まで"
+      }
+    },
+    {
+      "input": "FREQ=WEEKLY;COUNT=4",
+      "canonical": "FREQ=WEEKLY;COUNT=4",
+      "rule": {
+        "freq": "weekly",
+        "interval": 1,
+        "count": 4,
+        "until": null,
+        "byDay": [],
+        "byMonthDay": [],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-03-17",
+      "limit": 10,
+      "occurrences": ["2027-03-17", "2027-03-24", "2027-03-31", "2027-04-07"],
+      "describe": {
+        "en": "Weekly, 4 times",
+        "pt": "Todas as semanas, 4 vezes",
+        "es": "Todas las semanas, 4 veces",
+        "fr": "Toutes les semaines, 4 fois",
+        "de": "Wöchentlich, 4-mal",
+        "it": "Ogni settimana, 4 volte",
+        "nl": "Wekelijks, 4 keer",
+        "ja": "毎週、4回"
+      },
+      "describeFromStart": {
+        "en": "Weekly on Wednesday, 4 times",
+        "pt": "Todas as semanas à quarta-feira, 4 vezes",
+        "es": "Todas las semanas el miércoles, 4 veces",
+        "fr": "Toutes les semaines le mercredi, 4 fois",
+        "de": "Wöchentlich am Mittwoch, 4-mal",
+        "it": "Ogni settimana il mercoledì, 4 volte",
+        "nl": "Wekelijks op woensdag, 4 keer",
+        "ja": "毎週水曜日、4回"
+      }
+    },
+    {
+      "input": "FREQ=WEEKLY;INTERVAL=2;BYDAY=MO,WE;COUNT=10",
+      "canonical": "FREQ=WEEKLY;INTERVAL=2;BYDAY=MO,WE;COUNT=10",
+      "rule": {
+        "freq": "weekly",
+        "interval": 2,
+        "count": 10,
+        "until": null,
+        "byDay": [
+          {"ordinal": null, "weekday": 1},
+          {"ordinal": null, "weekday": 3}
+        ],
+        "byMonthDay": [],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-03-15",
+      "limit": 10,
+      "occurrences": ["2027-03-15", "2027-03-17", "2027-03-29", "2027-03-31", "2027-04-12", "2027-04-14", "2027-04-26", "2027-04-28", "2027-05-10", "2027-05-12"],
+      "describe": {
+        "en": "Every 2 weeks on Monday and Wednesday, 10 times",
+        "pt": "A cada 2 semanas à segunda-feira e à quarta-feira, 10 vezes",
+        "es": "Cada 2 semanas el lunes y el miércoles, 10 veces",
+        "fr": "Toutes les 2 semaines le lundi et le mercredi, 10 fois",
+        "de": "Alle 2 Wochen am Montag und am Mittwoch, 10-mal",
+        "it": "Ogni 2 settimane il lunedì e il mercoledì, 10 volte",
+        "nl": "Om de 2 weken op maandag en woensdag, 10 keer",
+        "ja": "2週間ごとの月曜日と水曜日、10回"
+      }
+    },
+    {
+      "input": "FREQ=WEEKLY;INTERVAL=2;COUNT=4;BYDAY=TU,SU;WKST=MO",
+      "canonical": "FREQ=WEEKLY;INTERVAL=2;BYDAY=TU,SU;COUNT=4",
+      "rule": {
+        "freq": "weekly",
+        "interval": 2,
+        "count": 4,
+        "until": null,
+        "byDay": [
+          {"ordinal": null, "weekday": 2},
+          {"ordinal": null, "weekday": 7}
+        ],
+        "byMonthDay": [],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "1997-08-05",
+      "limit": 10,
+      "occurrences": ["1997-08-05", "1997-08-10", "1997-08-19", "1997-08-24"],
+      "describe": {
+        "en": "Every 2 weeks on Tuesday and Sunday, 4 times",
+        "pt": "A cada 2 semanas à terça-feira e ao domingo, 4 vezes",
+        "es": "Cada 2 semanas el martes y el domingo, 4 veces",
+        "fr": "Toutes les 2 semaines le mardi et le dimanche, 4 fois",
+        "de": "Alle 2 Wochen am Dienstag und am Sonntag, 4-mal",
+        "it": "Ogni 2 settimane il martedì e la domenica, 4 volte",
+        "nl": "Om de 2 weken op dinsdag en zondag, 4 keer",
+        "ja": "2週間ごとの火曜日と日曜日、4回"
+      }
+    },
+    {
+      "input": "FREQ=WEEKLY;INTERVAL=2;COUNT=4;BYDAY=TU,SU;WKST=SU",
+      "canonical": "FREQ=WEEKLY;INTERVAL=2;BYDAY=TU,SU;WKST=SU;COUNT=4",
+      "rule": {
+        "freq": "weekly",
+        "interval": 2,
+        "count": 4,
+        "until": null,
+        "byDay": [
+          {"ordinal": null, "weekday": 2},
+          {"ordinal": null, "weekday": 7}
+        ],
+        "byMonthDay": [],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 7
+      },
+      "start": "1997-08-05",
+      "limit": 10,
+      "occurrences": ["1997-08-05", "1997-08-17", "1997-08-19", "1997-08-31"],
+      "describe": {
+        "en": "Every 2 weeks on Tuesday and Sunday, 4 times",
+        "pt": "A cada 2 semanas à terça-feira e ao domingo, 4 vezes",
+        "es": "Cada 2 semanas el martes y el domingo, 4 veces",
+        "fr": "Toutes les 2 semaines le mardi et le dimanche, 4 fois",
+        "de": "Alle 2 Wochen am Dienstag und am Sonntag, 4-mal",
+        "it": "Ogni 2 settimane il martedì e la domenica, 4 volte",
+        "nl": "Om de 2 weken op dinsdag en zondag, 4 keer",
+        "ja": "2週間ごとの火曜日と日曜日、4回"
+      }
+    },
+    {
+      "input": "FREQ=WEEKLY;BYDAY=SA,SU;BYMONTH=6,7,8",
+      "canonical": "FREQ=WEEKLY;BYMONTH=6,7,8;BYDAY=SA,SU",
+      "rule": {
+        "freq": "weekly",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [
+          {"ordinal": null, "weekday": 6},
+          {"ordinal": null, "weekday": 7}
+        ],
+        "byMonthDay": [],
+        "byMonth": [6, 7, 8],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-06-05",
+      "limit": 8,
+      "occurrences": ["2027-06-05", "2027-06-06", "2027-06-12", "2027-06-13", "2027-06-19", "2027-06-20", "2027-06-26", "2027-06-27"],
+      "describe": {
+        "en": "Weekly on Saturday and Sunday in June, July and August",
+        "pt": "Todas as semanas ao sábado e ao domingo em junho, julho e agosto",
+        "es": "Todas las semanas el sábado y el domingo en junio, julio y agosto",
+        "fr": "Toutes les semaines le samedi et le dimanche en juin, juillet et août",
+        "de": "Wöchentlich am Samstag und am Sonntag im Juni, Juli und August",
+        "it": "Ogni settimana il sabato e la domenica a giugno, luglio e agosto",
+        "nl": "Wekelijks op zaterdag en zondag in juni, juli en augustus",
+        "ja": "毎週6月、7月と8月の土曜日と日曜日"
+      }
+    },
+    {
+      "input": "FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1",
+      "canonical": "FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1",
+      "rule": {
+        "freq": "weekly",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [
+          {"ordinal": null, "weekday": 1},
+          {"ordinal": null, "weekday": 2},
+          {"ordinal": null, "weekday": 3},
+          {"ordinal": null, "weekday": 4},
+          {"ordinal": null, "weekday": 5}
+        ],
+        "byMonthDay": [],
+        "byMonth": [],
+        "bySetPos": [-1],
+        "weekStart": 1
+      },
+      "start": "2027-03-19",
+      "limit": 4,
+      "occurrences": ["2027-03-19", "2027-03-26", "2027-04-02", "2027-04-09"],
+      "describe": {
+        "en": "Weekly on the last weekday",
+        "pt": "Todas as semanas no último dia útil",
+        "es": "Todas las semanas el último día laborable",
+        "fr": "Toutes les semaines le dernier jour ouvré",
+        "de": "Wöchentlich am letzten Arbeitstag",
+        "it": "Ogni settimana l'ultimo giorno lavorativo",
+        "nl": "Wekelijks op de laatste werkdag",
+        "ja": "毎週最後の平日"
+      }
+    },
+    {
+      "input": "FREQ=WEEKLY;UNTIL=20270329T090000Z",
+      "canonical": "FREQ=WEEKLY;UNTIL=20270329T090000Z",
+      "rule": {
+        "freq": "weekly",
+        "interval": 1,
+        "count": null,
+        "until": "2027-03-29T09:00:00Z",
+        "byDay": [],
+        "byMonthDay": [],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-03-15",
+      "limit": 10,
+      "occurrences": ["2027-03-15", "2027-03-22", "2027-03-29"],
+      "describe": {
+        "en": "Weekly until 29 March 2027",
+        "pt": "Todas as semanas até 29 de março de 2027",
+        "es": "Todas las semanas hasta el 29 de marzo de 2027",
+        "fr": "Toutes les semaines jusqu'au 29 mars 2027",
+        "de": "Wöchentlich bis zum 29. März 2027",
+        "it": "Ogni settimana fino al 29 marzo 2027",
+        "nl": "Wekelijks tot en met 29 maart 2027",
+        "ja": "毎週、2027年3月29日まで"
+      }
+    },
+    {
+      "input": "FREQ=MONTHLY;BYDAY=-1FR",
+      "canonical": "FREQ=MONTHLY;BYDAY=-1FR",
+      "rule": {
+        "freq": "monthly",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [
+          {"ordinal": -1, "weekday": 5}
+        ],
+        "byMonthDay": [],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-01-29",
+      "limit": 6,
+      "occurrences": ["2027-01-29", "2027-02-26", "2027-03-26", "2027-04-30", "2027-05-28", "2027-06-25"],
+      "describe": {
+        "en": "Monthly on the last Friday",
+        "pt": "Todos os meses na última sexta-feira",
+        "es": "Todos los meses el último viernes",
+        "fr": "Tous les mois le dernier vendredi",
+        "de": "Monatlich am letzten Freitag",
+        "it": "Ogni mese l'ultimo venerdì",
+        "nl": "Maandelijks op de laatste vrijdag",
+        "ja": "毎月最終金曜日"
+      }
+    },
+    {
+      "input": "FREQ=MONTHLY;BYDAY=1MO,3MO",
+      "canonical": "FREQ=MONTHLY;BYDAY=1MO,3MO",
+      "rule": {
+        "freq": "monthly",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [
+          {"ordinal": 1, "weekday": 1},
+          {"ordinal": 3, "weekday": 1}
+        ],
+        "byMonthDay": [],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-01-04",
+      "limit": 6,
+      "occurrences": ["2027-01-04", "2027-01-18", "2027-02-01", "2027-02-15", "2027-03-01", "2027-03-15"],
+      "describe": {
+        "en": "Monthly on the first Monday and the third Monday",
+        "pt": "Todos os meses na primeira segunda-feira e na terceira segunda-feira",
+        "es": "Todos los meses el primer lunes y el tercer lunes",
+        "fr": "Tous les mois le premier lundi et le troisième lundi",
+        "de": "Monatlich am ersten Montag und am dritten Montag",
+        "it": "Ogni mese il primo lunedì e il terzo lunedì",
+        "nl": "Maandelijks op de eerste maandag en de derde maandag",
+        "ja": "毎月第1月曜日と第3月曜日"
+      }
+    },
+    {
+      "input": "FREQ=MONTHLY;BYDAY=MO,-1FR;COUNT=7",
+      "canonical": "FREQ=MONTHLY;BYDAY=MO,-1FR;COUNT=7",
+      "rule": {
+        "freq": "monthly",
+        "interval": 1,
+        "count": 7,
+        "until": null,
+        "byDay": [
+          {"ordinal": null, "weekday": 1},
+          {"ordinal": -1, "weekday": 5}
+        ],
+        "byMonthDay": [],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-01-04",
+      "limit": 10,
+      "occurrences": ["2027-01-04", "2027-01-11", "2027-01-18", "2027-01-25", "2027-01-29", "2027-02-01", "2027-02-08"],
+      "describe": {
+        "en": "Monthly on Monday and the last Friday, 7 times",
+        "pt": "Todos os meses à segunda-feira e na última sexta-feira, 7 vezes",
+        "es": "Todos los meses el lunes y el último viernes, 7 veces",
+        "fr": "Tous les mois le lundi et le dernier vendredi, 7 fois",
+        "de": "Monatlich am Montag und am letzten Freitag, 7-mal",
+        "it": "Ogni mese il lunedì e l'ultimo venerdì, 7 volte",
+        "nl": "Maandelijks op maandag en de laatste vrijdag, 7 keer",
+        "ja": "毎月月曜日と最終金曜日、7回"
+      }
+    },
+    {
+      "input": "FREQ=MONTHLY;BYDAY=-2SU",
+      "canonical": "FREQ=MONTHLY;BYDAY=-2SU",
+      "rule": {
+        "freq": "monthly",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [
+          {"ordinal": -2, "weekday": 7}
+        ],
+        "byMonthDay": [],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-01-24",
+      "limit": 4,
+      "occurrences": ["2027-01-24", "2027-02-21", "2027-03-21", "2027-04-18"],
+      "describe": {
+        "en": "Monthly on the second to last Sunday",
+        "pt": "Todos os meses no penúltimo domingo",
+        "es": "Todos los meses el penúltimo domingo",
+        "fr": "Tous les mois l'avant-dernier dimanche",
+        "de": "Monatlich am vorletzten Sonntag",
+        "it": "Ogni mese la penultima domenica",
+        "nl": "Maandelijks op de voorlaatste zondag",
+        "ja": "毎月最後から2番目の日曜日"
+      }
+    },
+    {
+      "input": "FREQ=MONTHLY;BYDAY=-3SA",
+      "canonical": "FREQ=MONTHLY;BYDAY=-3SA",
+      "rule": {
+        "freq": "monthly",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [
+          {"ordinal": -3, "weekday": 6}
+        ],
+        "byMonthDay": [],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-01-16",
+      "limit": 4,
+      "occurrences": ["2027-01-16", "2027-02-13", "2027-03-13", "2027-04-10"],
+      "describe": {
+        "en": "Monthly on the third to last Saturday",
+        "pt": "Todos os meses no terceiro sábado a contar do fim",
+        "es": "Todos los meses el tercer sábado desde el final",
+        "fr": "Tous les mois le troisième samedi en partant de la fin",
+        "de": "Monatlich am drittletzten Samstag",
+        "it": "Ogni mese il terzo sabato dalla fine",
+        "nl": "Maandelijks op de derde zaterdag van achteren",
+        "ja": "毎月最後から3番目の土曜日"
+      }
+    },
+    {
+      "input": "FREQ=MONTHLY;BYMONTHDAY=31",
+      "canonical": "FREQ=MONTHLY;BYMONTHDAY=31",
+      "rule": {
+        "freq": "monthly",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [],
+        "byMonthDay": [31],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-01-31",
+      "limit": 7,
+      "occurrences": ["2027-01-31", "2027-03-31", "2027-05-31", "2027-07-31", "2027-08-31", "2027-10-31", "2027-12-31"],
+      "describe": {
+        "en": "Monthly on the 31st",
+        "pt": "Todos os meses no dia 31",
+        "es": "Todos los meses el día 31",
+        "fr": "Tous les mois le 31",
+        "de": "Monatlich am 31.",
+        "it": "Ogni mese il giorno 31",
+        "nl": "Maandelijks op de 31e",
+        "ja": "毎月31日"
+      }
+    },
+    {
+      "input": "FREQ=MONTHLY;BYMONTHDAY=-1",
+      "canonical": "FREQ=MONTHLY;BYMONTHDAY=-1",
+      "rule": {
+        "freq": "monthly",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [],
+        "byMonthDay": [-1],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-01-31",
+      "limit": 6,
+      "occurrences": ["2027-01-31", "2027-02-28", "2027-03-31", "2027-04-30", "2027-05-31", "2027-06-30"],
+      "describe": {
+        "en": "Monthly on the last day",
+        "pt": "Todos os meses no último dia",
+        "es": "Todos los meses el último día",
+        "fr": "Tous les mois le dernier jour",
+        "de": "Monatlich am letzten Tag",
+        "it": "Ogni mese l'ultimo giorno",
+        "nl": "Maandelijks op de laatste dag",
+        "ja": "毎月末日"
+      }
+    },
+    {
+      "input": "FREQ=MONTHLY;BYMONTHDAY=-2",
+      "canonical": "FREQ=MONTHLY;BYMONTHDAY=-2",
+      "rule": {
+        "freq": "monthly",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [],
+        "byMonthDay": [-2],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2028-01-30",
+      "limit": 4,
+      "occurrences": ["2028-01-30", "2028-02-28", "2028-03-30", "2028-04-29"],
+      "describe": {
+        "en": "Monthly on the second to last day",
+        "pt": "Todos os meses no penúltimo dia",
+        "es": "Todos los meses el penúltimo día",
+        "fr": "Tous les mois l'avant-dernier jour",
+        "de": "Monatlich am vorletzten Tag",
+        "it": "Ogni mese il penultimo giorno",
+        "nl": "Maandelijks op de voorlaatste dag",
+        "ja": "毎月最後から2番目の日"
+      }
+    },
+    {
+      "input": "FREQ=MONTHLY;BYMONTHDAY=-3",
+      "canonical": "FREQ=MONTHLY;BYMONTHDAY=-3",
+      "rule": {
+        "freq": "monthly",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [],
+        "byMonthDay": [-3],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-01-29",
+      "limit": 4,
+      "occurrences": ["2027-01-29", "2027-02-26", "2027-03-29", "2027-04-28"],
+      "describe": {
+        "en": "Monthly on the third to last day",
+        "pt": "Todos os meses no terceiro dia a contar do fim",
+        "es": "Todos los meses el tercer día desde el final",
+        "fr": "Tous les mois le troisième jour en partant de la fin",
+        "de": "Monatlich am drittletzten Tag",
+        "it": "Ogni mese il terzo giorno dalla fine",
+        "nl": "Maandelijks op de derde dag van achteren",
+        "ja": "毎月最後から3番目の日"
+      }
+    },
+    {
+      "input": "FREQ=MONTHLY;BYMONTHDAY=-1,1,15",
+      "canonical": "FREQ=MONTHLY;BYMONTHDAY=1,15,-1",
+      "rule": {
+        "freq": "monthly",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [],
+        "byMonthDay": [1, 15, -1],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-01-01",
+      "limit": 7,
+      "occurrences": ["2027-01-01", "2027-01-15", "2027-01-31", "2027-02-01", "2027-02-15", "2027-02-28", "2027-03-01"],
+      "describe": {
+        "en": "Monthly on the 1st, the 15th and the last day",
+        "pt": "Todos os meses no dia 1, no dia 15 e no último dia",
+        "es": "Todos los meses el día 1, el día 15 y el último día",
+        "fr": "Tous les mois le 1er, le 15 et le dernier jour",
+        "de": "Monatlich am 1., am 15. und am letzten Tag",
+        "it": "Ogni mese il giorno 1, il giorno 15 e l'ultimo giorno",
+        "nl": "Maandelijks op de 1e, de 15e en de laatste dag",
+        "ja": "毎月1日、15日と末日"
+      }
+    },
+    {
+      "input": "FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1",
+      "canonical": "FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1",
+      "rule": {
+        "freq": "monthly",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [
+          {"ordinal": null, "weekday": 1},
+          {"ordinal": null, "weekday": 2},
+          {"ordinal": null, "weekday": 3},
+          {"ordinal": null, "weekday": 4},
+          {"ordinal": null, "weekday": 5}
+        ],
+        "byMonthDay": [],
+        "byMonth": [],
+        "bySetPos": [-1],
+        "weekStart": 1
+      },
+      "start": "2027-01-29",
+      "limit": 6,
+      "occurrences": ["2027-01-29", "2027-02-26", "2027-03-31", "2027-04-30", "2027-05-31", "2027-06-30"],
+      "describe": {
+        "en": "Monthly on the last weekday",
+        "pt": "Todos os meses no último dia útil",
+        "es": "Todos los meses el último día laborable",
+        "fr": "Tous les mois le dernier jour ouvré",
+        "de": "Monatlich am letzten Arbeitstag",
+        "it": "Ogni mese l'ultimo giorno lavorativo",
+        "nl": "Maandelijks op de laatste werkdag",
+        "ja": "毎月最後の平日"
+      }
+    },
+    {
+      "input": "FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=1,-1;COUNT=6",
+      "canonical": "FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=1,-1;COUNT=6",
+      "rule": {
+        "freq": "monthly",
+        "interval": 1,
+        "count": 6,
+        "until": null,
+        "byDay": [
+          {"ordinal": null, "weekday": 1},
+          {"ordinal": null, "weekday": 2},
+          {"ordinal": null, "weekday": 3},
+          {"ordinal": null, "weekday": 4},
+          {"ordinal": null, "weekday": 5}
+        ],
+        "byMonthDay": [],
+        "byMonth": [],
+        "bySetPos": [1, -1],
+        "weekStart": 1
+      },
+      "start": "2027-01-01",
+      "limit": 10,
+      "occurrences": ["2027-01-01", "2027-01-29", "2027-02-01", "2027-02-26", "2027-03-01", "2027-03-31"],
+      "describe": {
+        "en": "Monthly on the first weekday and the last weekday, 6 times",
+        "pt": "Todos os meses no primeiro dia útil e no último dia útil, 6 vezes",
+        "es": "Todos los meses el primer día laborable y el último día laborable, 6 veces",
+        "fr": "Tous les mois le premier jour ouvré et le dernier jour ouvré, 6 fois",
+        "de": "Monatlich am ersten Arbeitstag und am letzten Arbeitstag, 6-mal",
+        "it": "Ogni mese il primo giorno lavorativo e l'ultimo giorno lavorativo, 6 volte",
+        "nl": "Maandelijks op de eerste werkdag en de laatste werkdag, 6 keer",
+        "ja": "毎月最初の平日と最後の平日、6回"
+      }
+    },
+    {
+      "input": "FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR,SA,SU;BYSETPOS=-2",
+      "canonical": "FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR,SA,SU;BYSETPOS=-2",
+      "rule": {
+        "freq": "monthly",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [
+          {"ordinal": null, "weekday": 1},
+          {"ordinal": null, "weekday": 2},
+          {"ordinal": null, "weekday": 3},
+          {"ordinal": null, "weekday": 4},
+          {"ordinal": null, "weekday": 5},
+          {"ordinal": null, "weekday": 6},
+          {"ordinal": null, "weekday": 7}
+        ],
+        "byMonthDay": [],
+        "byMonth": [],
+        "bySetPos": [-2],
+        "weekStart": 1
+      },
+      "start": "2027-01-30",
+      "limit": 4,
+      "occurrences": ["2027-01-30", "2027-02-27", "2027-03-30", "2027-04-29"],
+      "describe": {
+        "en": "Monthly on the second to last day",
+        "pt": "Todos os meses no penúltimo dia",
+        "es": "Todos los meses el penúltimo día",
+        "fr": "Tous les mois l'avant-dernier jour",
+        "de": "Monatlich am vorletzten Tag",
+        "it": "Ogni mese il penultimo giorno",
+        "nl": "Maandelijks op de voorlaatste dag",
+        "ja": "毎月最後から2番目の日"
+      }
+    },
+    {
+      "input": "FREQ=MONTHLY;BYMONTHDAY=13;BYDAY=FR",
+      "canonical": "FREQ=MONTHLY;BYMONTHDAY=13;BYDAY=FR",
+      "rule": {
+        "freq": "monthly",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [
+          {"ordinal": null, "weekday": 5}
+        ],
+        "byMonthDay": [13],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2026-11-13",
+      "limit": 5,
+      "occurrences": ["2026-11-13", "2027-08-13", "2028-10-13", "2029-04-13", "2029-07-13"],
+      "describe": {
+        "en": "Monthly on the 13th, if it is a Friday",
+        "pt": "Todos os meses no dia 13, se for uma sexta-feira",
+        "es": "Todos los meses el día 13, si es viernes",
+        "fr": "Tous les mois le 13, si c'est un vendredi",
+        "de": "Monatlich am 13., wenn es ein Freitag ist",
+        "it": "Ogni mese il giorno 13, se è un venerdì",
+        "nl": "Maandelijks op de 13e, als het een vrijdag is",
+        "ja": "毎月13日（金曜日の場合）"
+      }
+    },
+    {
+      "input": "FREQ=MONTHLY;INTERVAL=3;BYMONTHDAY=1,15;UNTIL=20271231",
+      "canonical": "FREQ=MONTHLY;INTERVAL=3;BYMONTHDAY=1,15;UNTIL=20271231",
+      "rule": {
+        "freq": "monthly",
+        "interval": 3,
+        "count": null,
+        "until": "2027-12-31",
+        "byDay": [],
+        "byMonthDay": [1, 15],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-01-01",
+      "limit": 10,
+      "occurrences": ["2027-01-01", "2027-01-15", "2027-04-01", "2027-04-15", "2027-07-01", "2027-07-15", "2027-10-01", "2027-10-15"],
+      "describe": {
+        "en": "Every 3 months on the 1st and the 15th until 31 December 2027",
+        "pt": "A cada 3 meses no dia 1 e no dia 15 até 31 de dezembro de 2027",
+        "es": "Cada 3 meses el día 1 y el día 15 hasta el 31 de diciembre de 2027",
+        "fr": "Tous les 3 mois le 1er et le 15 jusqu'au 31 décembre 2027",
+        "de": "Alle 3 Monate am 1. und am 15. bis zum 31. Dezember 2027",
+        "it": "Ogni 3 mesi il giorno 1 e il giorno 15 fino al 31 dicembre 2027",
+        "nl": "Om de 3 maanden op de 1e en de 15e tot en met 31 december 2027",
+        "ja": "3か月ごとの1日と15日、2027年12月31日まで"
+      }
+    },
+    {
+      "input": "FREQ=MONTHLY;BYDAY=TU,TH;BYSETPOS=2",
+      "canonical": "FREQ=MONTHLY;BYDAY=TU,TH;BYSETPOS=2",
+      "rule": {
+        "freq": "monthly",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [
+          {"ordinal": null, "weekday": 2},
+          {"ordinal": null, "weekday": 4}
+        ],
+        "byMonthDay": [],
+        "byMonth": [],
+        "bySetPos": [2],
+        "weekStart": 1
+      },
+      "start": "2027-01-05",
+      "limit": 5,
+      "occurrences": ["2027-01-05", "2027-01-07", "2027-02-04", "2027-03-04", "2027-04-06"],
+      "describe": {
+        "en": "Monthly on Tuesday and Thursday (the second of each month)",
+        "pt": "Todos os meses à terça-feira e à quinta-feira (a segunda de cada mês)",
+        "es": "Todos los meses el martes y el jueves (la segunda de cada mes)",
+        "fr": "Tous les mois le mardi et le jeudi (la deuxième de chaque mois)",
+        "de": "Monatlich am Dienstag und am Donnerstag (jeweils der zweite Termin im Monat)",
+        "it": "Ogni mese il martedì e il giovedì (la seconda di ogni mese)",
+        "nl": "Maandelijks op dinsdag en donderdag (de tweede van elke maand)",
+        "ja": "毎月火曜日と木曜日（各月の2番目）"
+      }
+    },
+    {
+      "input": "FREQ=MONTHLY;BYDAY=TU,WE,TH;BYSETPOS=3;COUNT=3",
+      "canonical": "FREQ=MONTHLY;BYDAY=TU,WE,TH;BYSETPOS=3;COUNT=3",
+      "rule": {
+        "freq": "monthly",
+        "interval": 1,
+        "count": 3,
+        "until": null,
+        "byDay": [
+          {"ordinal": null, "weekday": 2},
+          {"ordinal": null, "weekday": 3},
+          {"ordinal": null, "weekday": 4}
+        ],
+        "byMonthDay": [],
+        "byMonth": [],
+        "bySetPos": [3],
+        "weekStart": 1
+      },
+      "start": "1997-09-04",
+      "limit": 10,
+      "occurrences": ["1997-09-04", "1997-10-07", "1997-11-06"],
+      "describe": {
+        "en": "Monthly on Tuesday, Wednesday and Thursday (the third of each month), 3 times",
+        "pt": "Todos os meses à terça-feira, à quarta-feira e à quinta-feira (a terceira de cada mês), 3 vezes",
+        "es": "Todos los meses el martes, el miércoles y el jueves (la tercera de cada mes), 3 veces",
+        "fr": "Tous les mois le mardi, le mercredi et le jeudi (la troisième de chaque mois), 3 fois",
+        "de": "Monatlich am Dienstag, am Mittwoch und am Donnerstag (jeweils der dritte Termin im Monat), 3-mal",
+        "it": "Ogni mese il martedì, il mercoledì e il giovedì (la terza di ogni mese), 3 volte",
+        "nl": "Maandelijks op dinsdag, woensdag en donderdag (de derde van elke maand), 3 keer",
+        "ja": "毎月火曜日、水曜日と木曜日（各月の3番目）、3回"
+      }
+    },
+    {
+      "input": "FREQ=MONTHLY;BYMONTH=3,10;BYDAY=SU;BYSETPOS=-1",
+      "canonical": "FREQ=MONTHLY;BYMONTH=3,10;BYDAY=SU;BYSETPOS=-1",
+      "rule": {
+        "freq": "monthly",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [
+          {"ordinal": null, "weekday": 7}
+        ],
+        "byMonthDay": [],
+        "byMonth": [3, 10],
+        "bySetPos": [-1],
+        "weekStart": 1
+      },
+      "start": "2027-03-28",
+      "limit": 5,
+      "occurrences": ["2027-03-28", "2027-10-31", "2028-03-26", "2028-10-29", "2029-03-25"],
+      "describe": {
+        "en": "Monthly on Sunday in March and October (the last of each month)",
+        "pt": "Todos os meses ao domingo em março e outubro (a última de cada mês)",
+        "es": "Todos los meses el domingo en marzo y octubre (la última de cada mes)",
+        "fr": "Tous les mois le dimanche en mars et octobre (la dernière de chaque mois)",
+        "de": "Monatlich am Sonntag im März und Oktober (jeweils der letzte Termin im Monat)",
+        "it": "Ogni mese la domenica a marzo e ottobre (l'ultima di ogni mese)",
+        "nl": "Maandelijks op zondag in maart en oktober (de laatste van elke maand)",
+        "ja": "毎月3月と10月の日曜日（各月の最後）"
+      }
+    },
+    {
+      "input": "FREQ=MONTHLY;COUNT=5",
+      "canonical": "FREQ=MONTHLY;COUNT=5",
+      "rule": {
+        "freq": "monthly",
+        "interval": 1,
+        "count": 5,
+        "until": null,
+        "byDay": [],
+        "byMonthDay": [],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-01-31",
+      "limit": 10,
+      "occurrences": ["2027-01-31", "2027-03-31", "2027-05-31", "2027-07-31", "2027-08-31"],
+      "describe": {
+        "en": "Monthly, 5 times",
+        "pt": "Todos os meses, 5 vezes",
+        "es": "Todos los meses, 5 veces",
+        "fr": "Tous les mois, 5 fois",
+        "de": "Monatlich, 5-mal",
+        "it": "Ogni mese, 5 volte",
+        "nl": "Maandelijks, 5 keer",
+        "ja": "毎月、5回"
+      },
+      "describeFromStart": {
+        "en": "Monthly on the 31st, 5 times",
+        "pt": "Todos os meses no dia 31, 5 vezes",
+        "es": "Todos los meses el día 31, 5 veces",
+        "fr": "Tous les mois le 31, 5 fois",
+        "de": "Monatlich am 31., 5-mal",
+        "it": "Ogni mese il giorno 31, 5 volte",
+        "nl": "Maandelijks op de 31e, 5 keer",
+        "ja": "毎月31日、5回"
+      }
+    },
+    {
+      "input": "FREQ=MONTHLY;COUNT=1",
+      "canonical": "FREQ=MONTHLY;COUNT=1",
+      "rule": {
+        "freq": "monthly",
+        "interval": 1,
+        "count": 1,
+        "until": null,
+        "byDay": [],
+        "byMonthDay": [],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-01-31",
+      "limit": 10,
+      "occurrences": ["2027-01-31"],
+      "describe": {
+        "en": "Monthly, once",
+        "pt": "Todos os meses, uma vez",
+        "es": "Todos los meses, una vez",
+        "fr": "Tous les mois, une fois",
+        "de": "Monatlich, einmal",
+        "it": "Ogni mese, una volta",
+        "nl": "Maandelijks, één keer",
+        "ja": "毎月、1回"
+      }
+    },
+    {
+      "input": "FREQ=YEARLY;UNTIL=20271231",
+      "canonical": "FREQ=YEARLY;UNTIL=20271231",
+      "rule": {
+        "freq": "yearly",
+        "interval": 1,
+        "count": null,
+        "until": "2027-12-31",
+        "byDay": [],
+        "byMonthDay": [],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2025-03-15",
+      "limit": 10,
+      "occurrences": ["2025-03-15", "2026-03-15", "2027-03-15"],
+      "describe": {
+        "en": "Every year until 31 December 2027",
+        "pt": "Todos os anos até 31 de dezembro de 2027",
+        "es": "Todos los años hasta el 31 de diciembre de 2027",
+        "fr": "Tous les ans jusqu'au 31 décembre 2027",
+        "de": "Jährlich bis zum 31. Dezember 2027",
+        "it": "Ogni anno fino al 31 dicembre 2027",
+        "nl": "Jaarlijks tot en met 31 december 2027",
+        "ja": "毎年、2027年12月31日まで"
+      },
+      "describeFromStart": {
+        "en": "Every year on 15 March until 31 December 2027",
+        "pt": "Todos os anos a 15 de março até 31 de dezembro de 2027",
+        "es": "Todos los años el 15 de marzo hasta el 31 de diciembre de 2027",
+        "fr": "Tous les ans le 15 mars jusqu'au 31 décembre 2027",
+        "de": "Jährlich am 15. März bis zum 31. Dezember 2027",
+        "it": "Ogni anno il 15 marzo fino al 31 dicembre 2027",
+        "nl": "Jaarlijks op 15 maart tot en met 31 december 2027",
+        "ja": "毎年3月15日、2027年12月31日まで"
+      }
+    },
+    {
+      "input": "FREQ=YEARLY;BYMONTH=3;BYMONTHDAY=15;COUNT=3",
+      "canonical": "FREQ=YEARLY;BYMONTH=3;BYMONTHDAY=15;COUNT=3",
+      "rule": {
+        "freq": "yearly",
+        "interval": 1,
+        "count": 3,
+        "until": null,
+        "byDay": [],
+        "byMonthDay": [15],
+        "byMonth": [3],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-03-15",
+      "limit": 10,
+      "occurrences": ["2027-03-15", "2028-03-15", "2029-03-15"],
+      "describe": {
+        "en": "Every year on 15 March, 3 times",
+        "pt": "Todos os anos a 15 de março, 3 vezes",
+        "es": "Todos los años el 15 de marzo, 3 veces",
+        "fr": "Tous les ans le 15 mars, 3 fois",
+        "de": "Jährlich am 15. März, 3-mal",
+        "it": "Ogni anno il 15 marzo, 3 volte",
+        "nl": "Jaarlijks op 15 maart, 3 keer",
+        "ja": "毎年3月15日、3回"
+      }
+    },
+    {
+      "input": "FREQ=YEARLY",
+      "canonical": "FREQ=YEARLY",
+      "rule": {
+        "freq": "yearly",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [],
+        "byMonthDay": [],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2024-02-29",
+      "limit": 4,
+      "occurrences": ["2024-02-29", "2028-02-29", "2032-02-29", "2036-02-29"],
+      "describe": {
+        "en": "Every year",
+        "pt": "Todos os anos",
+        "es": "Todos los años",
+        "fr": "Tous les ans",
+        "de": "Jährlich",
+        "it": "Ogni anno",
+        "nl": "Jaarlijks",
+        "ja": "毎年"
+      },
+      "describeFromStart": {
+        "en": "Every year on 29 February",
+        "pt": "Todos os anos a 29 de fevereiro",
+        "es": "Todos los años el 29 de febrero",
+        "fr": "Tous les ans le 29 février",
+        "de": "Jährlich am 29. Februar",
+        "it": "Ogni anno il 29 febbraio",
+        "nl": "Jaarlijks op 29 februari",
+        "ja": "毎年2月29日"
+      }
+    },
+    {
+      "input": "FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=29",
+      "canonical": "FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=29",
+      "rule": {
+        "freq": "yearly",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [],
+        "byMonthDay": [29],
+        "byMonth": [2],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2024-02-29",
+      "limit": 4,
+      "occurrences": ["2024-02-29", "2028-02-29", "2032-02-29", "2036-02-29"],
+      "describe": {
+        "en": "Every year on 29 February",
+        "pt": "Todos os anos a 29 de fevereiro",
+        "es": "Todos los años el 29 de febrero",
+        "fr": "Tous les ans le 29 février",
+        "de": "Jährlich am 29. Februar",
+        "it": "Ogni anno il 29 febbraio",
+        "nl": "Jaarlijks op 29 februari",
+        "ja": "毎年2月29日"
+      }
+    },
+    {
+      "input": "FREQ=YEARLY;BYMONTH=9;BYDAY=1MO",
+      "canonical": "FREQ=YEARLY;BYMONTH=9;BYDAY=1MO",
+      "rule": {
+        "freq": "yearly",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [
+          {"ordinal": 1, "weekday": 1}
+        ],
+        "byMonthDay": [],
+        "byMonth": [9],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-09-06",
+      "limit": 4,
+      "occurrences": ["2027-09-06", "2028-09-04", "2029-09-03", "2030-09-02"],
+      "describe": {
+        "en": "Every year on the first Monday in September",
+        "pt": "Todos os anos na primeira segunda-feira em setembro",
+        "es": "Todos los años el primer lunes en septiembre",
+        "fr": "Tous les ans le premier lundi en septembre",
+        "de": "Jährlich am ersten Montag im September",
+        "it": "Ogni anno il primo lunedì a settembre",
+        "nl": "Jaarlijks op de eerste maandag in september",
+        "ja": "毎年9月の第1月曜日"
+      }
+    },
+    {
+      "input": "FREQ=YEARLY;BYDAY=20MO",
+      "canonical": "FREQ=YEARLY;BYDAY=20MO",
+      "rule": {
+        "freq": "yearly",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [
+          {"ordinal": 20, "weekday": 1}
+        ],
+        "byMonthDay": [],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "1997-05-19",
+      "limit": 3,
+      "occurrences": ["1997-05-19", "1998-05-18", "1999-05-17"],
+      "describe": {
+        "en": "Every year on the 20th Monday of the year",
+        "pt": "Todos os anos na 20.ª segunda-feira do ano",
+        "es": "Todos los años el 20.º lunes del año",
+        "fr": "Tous les ans le 20e lundi de l'année",
+        "de": "Jährlich am 20. Montag des Jahres",
+        "it": "Ogni anno il 20º lunedì dell'anno",
+        "nl": "Jaarlijks op de 20e maandag van het jaar",
+        "ja": "毎年第20月曜日"
+      }
+    },
+    {
+      "input": "FREQ=YEARLY;BYDAY=1SU",
+      "canonical": "FREQ=YEARLY;BYDAY=1SU",
+      "rule": {
+        "freq": "yearly",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [
+          {"ordinal": 1, "weekday": 7}
+        ],
+        "byMonthDay": [],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-01-03",
+      "limit": 3,
+      "occurrences": ["2027-01-03", "2028-01-02", "2029-01-07"],
+      "describe": {
+        "en": "Every year on the first Sunday of the year",
+        "pt": "Todos os anos no primeiro domingo do ano",
+        "es": "Todos los años el primer domingo del año",
+        "fr": "Tous les ans le premier dimanche de l'année",
+        "de": "Jährlich am ersten Sonntag des Jahres",
+        "it": "Ogni anno la prima domenica dell'anno",
+        "nl": "Jaarlijks op de eerste zondag van het jaar",
+        "ja": "毎年第1日曜日"
+      }
+    },
+    {
+      "input": "FREQ=YEARLY;BYMONTH=3;BYDAY=TH",
+      "canonical": "FREQ=YEARLY;BYMONTH=3;BYDAY=TH",
+      "rule": {
+        "freq": "yearly",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [
+          {"ordinal": null, "weekday": 4}
+        ],
+        "byMonthDay": [],
+        "byMonth": [3],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "1997-03-13",
+      "limit": 5,
+      "occurrences": ["1997-03-13", "1997-03-20", "1997-03-27", "1998-03-05", "1998-03-12"],
+      "describe": {
+        "en": "Every year on Thursday in March",
+        "pt": "Todos os anos à quinta-feira em março",
+        "es": "Todos los años el jueves en marzo",
+        "fr": "Tous les ans le jeudi en mars",
+        "de": "Jährlich am Donnerstag im März",
+        "it": "Ogni anno il giovedì a marzo",
+        "nl": "Jaarlijks op donderdag in maart",
+        "ja": "毎年3月の木曜日"
+      }
+    },
+    {
+      "input": "FREQ=YEARLY;BYMONTH=11;BYDAY=TU;BYMONTHDAY=2,3,4,5,6,7,8",
+      "canonical": "FREQ=YEARLY;BYMONTH=11;BYMONTHDAY=2,3,4,5,6,7,8;BYDAY=TU",
+      "rule": {
+        "freq": "yearly",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [
+          {"ordinal": null, "weekday": 2}
+        ],
+        "byMonthDay": [2, 3, 4, 5, 6, 7, 8],
+        "byMonth": [11],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "1996-11-05",
+      "limit": 3,
+      "occurrences": ["1996-11-05", "1997-11-04", "1998-11-03"],
+      "describe": {
+        "en": "Every year on the 2nd, the 3rd, the 4th, the 5th, the 6th, the 7th and the 8th in November, if it is a Tuesday",
+        "pt": "Todos os anos no dia 2, no dia 3, no dia 4, no dia 5, no dia 6, no dia 7 e no dia 8 em novembro, se for uma terça-feira",
+        "es": "Todos los años el día 2, el día 3, el día 4, el día 5, el día 6, el día 7 y el día 8 en noviembre, si es martes",
+        "fr": "Tous les ans le 2, le 3, le 4, le 5, le 6, le 7 et le 8 en novembre, si c'est un mardi",
+        "de": "Jährlich am 2., am 3., am 4., am 5., am 6., am 7. und am 8. im November, wenn es ein Dienstag ist",
+        "it": "Ogni anno il giorno 2, il giorno 3, il giorno 4, il giorno 5, il giorno 6, il giorno 7 e il giorno 8 a novembre, se è un martedì",
+        "nl": "Jaarlijks op de 2e, de 3e, de 4e, de 5e, de 6e, de 7e en de 8e in november, als het een dinsdag is",
+        "ja": "毎年11月の2日、3日、4日、5日、6日、7日と8日（火曜日の場合）"
+      }
+    },
+    {
+      "input": "FREQ=YEARLY;INTERVAL=4;BYMONTH=11;BYDAY=TU;BYMONTHDAY=2,3,4,5,6,7,8",
+      "canonical": "FREQ=YEARLY;INTERVAL=4;BYMONTH=11;BYMONTHDAY=2,3,4,5,6,7,8;BYDAY=TU",
+      "rule": {
+        "freq": "yearly",
+        "interval": 4,
+        "count": null,
+        "until": null,
+        "byDay": [
+          {"ordinal": null, "weekday": 2}
+        ],
+        "byMonthDay": [2, 3, 4, 5, 6, 7, 8],
+        "byMonth": [11],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "1996-11-05",
+      "limit": 3,
+      "occurrences": ["1996-11-05", "2000-11-07", "2004-11-02"],
+      "describe": {
+        "en": "Every 4 years on the 2nd, the 3rd, the 4th, the 5th, the 6th, the 7th and the 8th in November, if it is a Tuesday",
+        "pt": "A cada 4 anos no dia 2, no dia 3, no dia 4, no dia 5, no dia 6, no dia 7 e no dia 8 em novembro, se for uma terça-feira",
+        "es": "Cada 4 años el día 2, el día 3, el día 4, el día 5, el día 6, el día 7 y el día 8 en noviembre, si es martes",
+        "fr": "Tous les 4 ans le 2, le 3, le 4, le 5, le 6, le 7 et le 8 en novembre, si c'est un mardi",
+        "de": "Alle 4 Jahre am 2., am 3., am 4., am 5., am 6., am 7. und am 8. im November, wenn es ein Dienstag ist",
+        "it": "Ogni 4 anni il giorno 2, il giorno 3, il giorno 4, il giorno 5, il giorno 6, il giorno 7 e il giorno 8 a novembre, se è un martedì",
+        "nl": "Om de 4 jaar op de 2e, de 3e, de 4e, de 5e, de 6e, de 7e en de 8e in november, als het een dinsdag is",
+        "ja": "4年ごとの11月の2日、3日、4日、5日、6日、7日と8日（火曜日の場合）"
+      }
+    },
+    {
+      "input": "FREQ=YEARLY;BYMONTHDAY=1",
+      "canonical": "FREQ=YEARLY;BYMONTHDAY=1",
+      "rule": {
+        "freq": "yearly",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [],
+        "byMonthDay": [1],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-01-01",
+      "limit": 4,
+      "occurrences": ["2027-01-01", "2027-02-01", "2027-03-01", "2027-04-01"],
+      "describe": {
+        "en": "Every year on the 1st of every month",
+        "pt": "Todos os anos no dia 1 de cada mês",
+        "es": "Todos los años el día 1 de cada mes",
+        "fr": "Tous les ans le 1er de chaque mois",
+        "de": "Jährlich am 1. jedes Monats",
+        "it": "Ogni anno il giorno 1 di ogni mese",
+        "nl": "Jaarlijks op de 1e van elke maand",
+        "ja": "毎年各月の1日"
+      }
+    },
+    {
+      "input": "FREQ=YEARLY;BYMONTH=6,12",
+      "canonical": "FREQ=YEARLY;BYMONTH=6,12",
+      "rule": {
+        "freq": "yearly",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [],
+        "byMonthDay": [],
+        "byMonth": [6, 12],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-06-10",
+      "limit": 4,
+      "occurrences": ["2027-06-10", "2027-12-10", "2028-06-10", "2028-12-10"],
+      "describe": {
+        "en": "Every year in June and December",
+        "pt": "Todos os anos em junho e dezembro",
+        "es": "Todos los años en junio y diciembre",
+        "fr": "Tous les ans en juin et décembre",
+        "de": "Jährlich im Juni und Dezember",
+        "it": "Ogni anno a giugno e dicembre",
+        "nl": "Jaarlijks in juni en december",
+        "ja": "毎年（6月と12月）"
+      },
+      "describeFromStart": {
+        "en": "Every year on the 10th in June and December",
+        "pt": "Todos os anos no dia 10 em junho e dezembro",
+        "es": "Todos los años el día 10 en junio y diciembre",
+        "fr": "Tous les ans le 10 en juin et décembre",
+        "de": "Jährlich am 10. im Juni und Dezember",
+        "it": "Ogni anno il giorno 10 a giugno e dicembre",
+        "nl": "Jaarlijks op de 10e in juni en december",
+        "ja": "毎年6月と12月の10日"
+      }
+    },
+    {
+      "input": "FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU",
+      "canonical": "FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU",
+      "rule": {
+        "freq": "yearly",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [
+          {"ordinal": -1, "weekday": 7}
+        ],
+        "byMonthDay": [],
+        "byMonth": [10],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-10-31",
+      "limit": 3,
+      "occurrences": ["2027-10-31", "2028-10-29", "2029-10-28"],
+      "describe": {
+        "en": "Every year on the last Sunday in October",
+        "pt": "Todos os anos no último domingo em outubro",
+        "es": "Todos los años el último domingo en octubre",
+        "fr": "Tous les ans le dernier dimanche en octobre",
+        "de": "Jährlich am letzten Sonntag im Oktober",
+        "it": "Ogni anno l'ultima domenica a ottobre",
+        "nl": "Jaarlijks op de laatste zondag in oktober",
+        "ja": "毎年10月の最終日曜日"
+      }
+    },
+    {
+      "input": "FREQ=YEARLY;BYMONTH=4,8;BYMONTHDAY=8",
+      "canonical": "FREQ=YEARLY;BYMONTH=4,8;BYMONTHDAY=8",
+      "rule": {
+        "freq": "yearly",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [],
+        "byMonthDay": [8],
+        "byMonth": [4, 8],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-04-08",
+      "limit": 4,
+      "occurrences": ["2027-04-08", "2027-08-08", "2028-04-08", "2028-08-08"],
+      "describe": {
+        "en": "Every year on the 8th in April and August",
+        "pt": "Todos os anos no dia 8 em abril e agosto",
+        "es": "Todos los años el día 8 en abril y agosto",
+        "fr": "Tous les ans le 8 en avril et août",
+        "de": "Jährlich am 8. im April und August",
+        "it": "Ogni anno il giorno 8 ad aprile e agosto",
+        "nl": "Jaarlijks op de 8e in april en augustus",
+        "ja": "毎年4月と8月の8日"
+      }
+    },
+    {
+      "input": "FREQ=YEARLY;BYMONTH=8;BYMONTHDAY=1;UNTIL=20300108",
+      "canonical": "FREQ=YEARLY;BYMONTH=8;BYMONTHDAY=1;UNTIL=20300108",
+      "rule": {
+        "freq": "yearly",
+        "interval": 1,
+        "count": null,
+        "until": "2030-01-08",
+        "byDay": [],
+        "byMonthDay": [1],
+        "byMonth": [8],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-08-01",
+      "limit": 10,
+      "occurrences": ["2027-08-01", "2028-08-01", "2029-08-01"],
+      "describe": {
+        "en": "Every year on 1 August until 8 January 2030",
+        "pt": "Todos os anos a 1 de agosto até 8 de janeiro de 2030",
+        "es": "Todos los años el 1 de agosto hasta el 8 de enero de 2030",
+        "fr": "Tous les ans le 1er août jusqu'au 8 janvier 2030",
+        "de": "Jährlich am 1. August bis zum 8. Januar 2030",
+        "it": "Ogni anno il 1º agosto fino all'8 gennaio 2030",
+        "nl": "Jaarlijks op 1 augustus tot en met 8 januari 2030",
+        "ja": "毎年8月1日、2030年1月8日まで"
+      }
+    },
+    {
+      "input": "FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=30",
+      "canonical": "FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=30",
+      "rule": {
+        "freq": "yearly",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [],
+        "byMonthDay": [30],
+        "byMonth": [2],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-01-01",
+      "limit": 5,
+      "occurrences": ["2027-01-01"],
+      "describe": {
+        "en": "Every year on 30 February",
+        "pt": "Todos os anos a 30 de fevereiro",
+        "es": "Todos los años el 30 de febrero",
+        "fr": "Tous les ans le 30 février",
+        "de": "Jährlich am 30. Februar",
+        "it": "Ogni anno il 30 febbraio",
+        "nl": "Jaarlijks op 30 februari",
+        "ja": "毎年2月30日"
+      }
+    },
+    {
+      "input": "rrule:count=3;freq=daily;interval=1",
+      "canonical": "FREQ=DAILY;COUNT=3",
+      "rule": {
+        "freq": "daily",
+        "interval": 1,
+        "count": 3,
+        "until": null,
+        "byDay": [],
+        "byMonthDay": [],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 1
+      },
+      "start": "2027-12-30",
+      "limit": 10,
+      "occurrences": ["2027-12-30", "2027-12-31", "2028-01-01"],
+      "describe": {
+        "en": "Daily, 3 times",
+        "pt": "Todos os dias, 3 vezes",
+        "es": "Todos los días, 3 veces",
+        "fr": "Tous les jours, 3 fois",
+        "de": "Täglich, 3-mal",
+        "it": "Ogni giorno, 3 volte",
+        "nl": "Dagelijks, 3 keer",
+        "ja": "毎日、3回"
+      }
+    },
+    {
+      "input": "FREQ=WEEKLY;BYDAY=FR,MO,FR;WKST=SU;",
+      "canonical": "FREQ=WEEKLY;BYDAY=MO,FR;WKST=SU",
+      "rule": {
+        "freq": "weekly",
+        "interval": 1,
+        "count": null,
+        "until": null,
+        "byDay": [
+          {"ordinal": null, "weekday": 1},
+          {"ordinal": null, "weekday": 5}
+        ],
+        "byMonthDay": [],
+        "byMonth": [],
+        "bySetPos": [],
+        "weekStart": 7
+      },
+      "start": "2027-03-15",
+      "limit": 5,
+      "occurrences": ["2027-03-15", "2027-03-19", "2027-03-22", "2027-03-26", "2027-03-29"],
+      "describe": {
+        "en": "Weekly on Monday and Friday",
+        "pt": "Todas as semanas à segunda-feira e à sexta-feira",
+        "es": "Todas las semanas el lunes y el viernes",
+        "fr": "Toutes les semaines le lundi et le vendredi",
+        "de": "Wöchentlich am Montag und am Freitag",
+        "it": "Ogni settimana il lunedì e il venerdì",
+        "nl": "Wekelijks op maandag en vrijdag",
+        "ja": "毎週月曜日と金曜日"
+      }
+    }
+  ],
+  "invalid": [
+    {
+      "input": "",
+      "error": "The rule is empty"
+    },
+    {
+      "input": "RRULE:",
+      "error": "The rule is empty"
+    },
+    {
+      "input": "INTERVAL=2",
+      "error": "FREQ is missing"
+    },
+    {
+      "input": "FREQ=HOURLY",
+      "error": "FREQ=HOURLY is not supported"
+    },
+    {
+      "input": "FREQ=DAILY;BYHOUR=9",
+      "error": "BYHOUR is not supported"
+    },
+    {
+      "input": "FREQ=YEARLY;BYWEEKNO=20",
+      "error": "BYWEEKNO is not supported"
+    },
+    {
+      "input": "FREQ=DAILY;FREQ=WEEKLY",
+      "error": "FREQ appears twice"
+    },
+    {
+      "input": "FREQ=DAILY;INTERVAL=0",
+      "error": "INTERVAL must be a positive whole number"
+    },
+    {
+      "input": "FREQ=DAILY;COUNT=x",
+      "error": "COUNT must be a positive whole number"
+    },
+    {
+      "input": "FREQ=DAILY;COUNT=3;UNTIL=20271231",
+      "error": "COUNT and UNTIL cannot both be set"
+    },
+    {
+      "input": "FREQ=DAILY;UNTIL=2027-12-31",
+      "error": "UNTIL must be a date (20271231) or a UTC date and time (20271231T235959Z)"
+    },
+    {
+      "input": "FREQ=DAILY;UNTIL=20270230",
+      "error": "UNTIL must be a date (20271231) or a UTC date and time (20271231T235959Z)"
+    },
+    {
+      "input": "FREQ=DAILY;UNTIL=20271231T235959",
+      "error": "UNTIL must be a date (20271231) or a UTC date and time (20271231T235959Z)"
+    },
+    {
+      "input": "FREQ=WEEKLY;BYDAY=XX",
+      "error": "BYDAY has an invalid day: XX"
+    },
+    {
+      "input": "FREQ=WEEKLY;BYDAY=1MO",
+      "error": "BYDAY ordinals such as 1MO need FREQ=MONTHLY or FREQ=YEARLY"
+    },
+    {
+      "input": "FREQ=MONTHLY;BYDAY=6MO",
+      "error": "BYDAY has an invalid day: 6MO"
+    },
+    {
+      "input": "FREQ=YEARLY;BYDAY=0MO",
+      "error": "BYDAY has an invalid day: 0MO"
+    },
+    {
+      "input": "FREQ=YEARLY;BYDAY=54MO",
+      "error": "BYDAY has an invalid day: 54MO"
+    },
+    {
+      "input": "FREQ=MONTHLY;BYMONTHDAY=32",
+      "error": "BYMONTHDAY has an invalid day: 32"
+    },
+    {
+      "input": "FREQ=MONTHLY;BYMONTHDAY=0",
+      "error": "BYMONTHDAY has an invalid day: 0"
+    },
+    {
+      "input": "FREQ=MONTHLY;BYMONTHDAY=+40",
+      "error": "BYMONTHDAY has an invalid day: 40"
+    },
+    {
+      "input": "FREQ=DAILY;BYMONTHDAY=1.5",
+      "error": "BYMONTHDAY has an invalid day: 1.5"
+    },
+    {
+      "input": "FREQ=WEEKLY;BYMONTHDAY=1",
+      "error": "BYMONTHDAY cannot be used with FREQ=WEEKLY"
+    },
+    {
+      "input": "FREQ=YEARLY;BYMONTH=13",
+      "error": "BYMONTH has an invalid month: 13"
+    },
+    {
+      "input": "FREQ=MONTHLY;BYSETPOS=1",
+      "error": "BYSETPOS needs BYDAY, BYMONTHDAY or BYMONTH"
+    },
+    {
+      "input": "FREQ=MONTHLY;BYDAY=MO;BYSETPOS=0",
+      "error": "BYSETPOS has an invalid position: 0"
+    },
+    {
+      "input": "FREQ=DAILY;WKST=XY",
+      "error": "WKST has an invalid day: XY"
+    },
+    {
+      "input": "FREQ=DAILY;BYDAY=",
+      "error": "BYDAY is empty"
+    },
+    {
+      "input": "FREQ=DAILY;FOO",
+      "error": "FOO is not a NAME=VALUE pair"
+    }
+  ]
+}

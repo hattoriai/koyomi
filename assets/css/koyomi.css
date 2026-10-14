@@ -1,0 +1,1179 @@
+/*
+ * Koyomi picker styles.
+ *
+ * Every colour, space, radius and font comes from a --koyomi-* custom
+ * property. Set them on .koyomi (or higher) to theme the pickers, or load
+ * koyomi-sumi.css to map them to the Sumi tokens. The defaults below have
+ * no specificity, so a value set on :root, on an ancestor or on .koyomi
+ * itself wins. They are Kotoba's own defaults, so that a page with both
+ * looks like one thing.
+ */
+
+:where(:root) {
+  --koyomi-font: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --koyomi-font-size: 1rem;
+  --koyomi-small: 0.875em;
+  --koyomi-line-height: 1.4;
+  --koyomi-text: #1f1f23;
+  --koyomi-muted: #6b6b76;
+  --koyomi-background: #ffffff;
+  --koyomi-surface: #f6f6f7;
+  --koyomi-border: #d9d9de;
+  --koyomi-accent: #2f5bd3;
+  --koyomi-accent-text: #ffffff;
+  /* The days between the ends of a range, and a range drawn while the
+     pointer moves. */
+  --koyomi-range: rgba(47, 91, 211, 0.12);
+  --koyomi-range-preview: rgba(47, 91, 211, 0.08);
+  --koyomi-today: var(--koyomi-accent);
+  --koyomi-holiday: color-mix(in oklab, #dc2626 80%, var(--koyomi-text));
+  --koyomi-weekend: var(--koyomi-muted);
+  --koyomi-disabled: color-mix(in oklab, var(--koyomi-muted) 55%, transparent);
+  --koyomi-invalid: color-mix(in oklab, #dc2626 85%, var(--koyomi-text));
+  /* The tones of day content and marks. */
+  --koyomi-tone-accent: var(--koyomi-accent);
+  --koyomi-tone-success: color-mix(in oklab, #1a7f37 85%, var(--koyomi-text));
+  --koyomi-tone-warning: color-mix(in oklab, #b35900 85%, var(--koyomi-text));
+  --koyomi-tone-danger: color-mix(in oklab, #c62828 85%, var(--koyomi-text));
+  --koyomi-tone-muted: var(--koyomi-muted);
+  --koyomi-radius: 6px;
+  --koyomi-space: 0.5rem;
+  --koyomi-field-height: 2.5rem;
+  --koyomi-field-padding: 0 0.5rem 0 0.75rem;
+  /* The size of a day: 44px on a touch screen, see below. */
+  --koyomi-day-size: 2.25rem;
+  --koyomi-icon-size: 18px;
+  --koyomi-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --koyomi-focus-ring: 0 0 0 2px var(--koyomi-background), 0 0 0 4px var(--koyomi-accent);
+  /* The popover: paper, as the field. */
+  --koyomi-floating-background: var(--koyomi-background);
+  --koyomi-floating-text: var(--koyomi-text);
+  --koyomi-floating-border: var(--koyomi-border);
+  --koyomi-floating-shadow: var(--koyomi-shadow);
+  --koyomi-floating-radius: calc(var(--koyomi-radius) + 2px);
+  --koyomi-backdrop: rgba(0, 0, 0, 0.32);
+  --koyomi-transition: 120ms ease-out;
+}
+
+@media (pointer: coarse) {
+  :where(:root) {
+    --koyomi-day-size: 2.75rem;
+    --koyomi-field-height: 2.75rem;
+  }
+}
+
+.koyomi {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  color: var(--koyomi-text);
+  font-family: var(--koyomi-font);
+  font-size: var(--koyomi-font-size);
+  line-height: var(--koyomi-line-height);
+}
+
+.koyomi-inline {
+  display: block;
+}
+
+.koyomi *,
+.koyomi *::before,
+.koyomi *::after {
+  box-sizing: border-box;
+}
+
+/* The browser's own inputs: shown until the hook mounts, then kept for the
+   form and hidden. */
+.koyomi-native {
+  min-height: var(--koyomi-field-height);
+  padding: var(--koyomi-field-padding);
+  border: 1px solid var(--koyomi-border);
+  border-radius: var(--koyomi-radius);
+  background: var(--koyomi-background);
+  color: inherit;
+  font: inherit;
+}
+
+.koyomi-native + .koyomi-native {
+  margin-inline-start: var(--koyomi-space);
+}
+
+.koyomi-ready > .koyomi-native {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.koyomi-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.koyomi-icon {
+  display: block;
+  width: var(--koyomi-icon-size);
+  height: var(--koyomi-icon-size);
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* The field */
+
+.koyomi-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  min-height: var(--koyomi-field-height);
+  max-width: 100%;
+  padding: var(--koyomi-field-padding);
+  border: 1px solid var(--koyomi-border);
+  border-radius: var(--koyomi-radius);
+  background: var(--koyomi-background);
+  cursor: text;
+  transition: border-color var(--koyomi-transition), box-shadow var(--koyomi-transition);
+}
+
+.koyomi-control:hover {
+  border-color: color-mix(in oklab, var(--koyomi-border) 60%, var(--koyomi-text));
+}
+
+.koyomi-control:focus-within {
+  border-color: var(--koyomi-accent);
+  box-shadow: var(--koyomi-focus-ring);
+}
+
+.koyomi-control.koyomi-invalid {
+  border-color: var(--koyomi-invalid);
+}
+
+.koyomi-disabled .koyomi-control {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.koyomi-readonly .koyomi-control {
+  background: var(--koyomi-surface);
+}
+
+.koyomi-segments {
+  display: inline-flex;
+  align-items: baseline;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.koyomi-segment {
+  padding: 0.0625rem 0.125rem;
+  border-radius: calc(var(--koyomi-radius) - 3px);
+  outline: none;
+  caret-color: transparent;
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.koyomi-segment:focus {
+  background: var(--koyomi-accent);
+  color: var(--koyomi-accent-text);
+}
+
+.koyomi-segment.koyomi-placeholder {
+  color: var(--koyomi-muted);
+}
+
+.koyomi-segment.koyomi-placeholder:focus {
+  color: var(--koyomi-accent-text);
+}
+
+.koyomi-literal,
+.koyomi-range-dash {
+  color: var(--koyomi-muted);
+}
+
+.koyomi-range-dash {
+  padding: 0 0.375rem;
+}
+
+.koyomi-zone {
+  margin-inline-start: 0.375rem;
+  color: var(--koyomi-muted);
+  font-size: var(--koyomi-small);
+}
+
+.koyomi-trigger,
+.koyomi-clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  margin-inline-start: auto;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: calc(var(--koyomi-radius) - 2px);
+  background: transparent;
+  color: var(--koyomi-muted);
+  cursor: pointer;
+  flex: none;
+}
+
+.koyomi-clear {
+  width: 1.75rem;
+  height: 1.75rem;
+  --koyomi-icon-size: 14px;
+}
+
+.koyomi-clear + .koyomi-trigger {
+  margin-inline-start: 0;
+}
+
+.koyomi-trigger:hover,
+.koyomi-clear:hover {
+  color: var(--koyomi-text);
+  background: var(--koyomi-surface);
+}
+
+.koyomi-trigger:focus-visible,
+.koyomi-clear:focus-visible {
+  outline: none;
+  box-shadow: var(--koyomi-focus-ring);
+}
+
+.koyomi-open .koyomi-trigger {
+  color: var(--koyomi-accent);
+}
+
+.koyomi-clear[hidden] {
+  display: none;
+}
+
+/* Several dates: chips. */
+
+.koyomi-chips,
+.koyomi-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  min-width: 10rem;
+  padding: 0.25rem 0;
+  cursor: pointer;
+}
+
+.koyomi-summary {
+  color: inherit;
+}
+
+.koyomi-chips-empty {
+  color: var(--koyomi-muted);
+}
+
+.koyomi-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  padding: 0.0625rem 0.125rem 0.0625rem 0.5rem;
+  border-radius: 999px;
+  background: var(--koyomi-surface);
+  border: 1px solid var(--koyomi-border);
+  font-size: var(--koyomi-small);
+  white-space: nowrap;
+}
+
+.koyomi-chip-remove {
+  display: inline-flex;
+  padding: 0.125rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--koyomi-muted);
+  cursor: pointer;
+  --koyomi-icon-size: 12px;
+}
+
+.koyomi-chip-remove:hover {
+  color: var(--koyomi-text);
+}
+
+.koyomi-chip-remove:focus-visible {
+  outline: none;
+  box-shadow: var(--koyomi-focus-ring);
+}
+
+.koyomi-message:empty {
+  display: none;
+}
+
+.koyomi-message {
+  margin-top: 0.25rem;
+  color: var(--koyomi-invalid);
+  font-size: var(--koyomi-small);
+}
+
+/* The popover */
+
+.koyomi-popover {
+  z-index: 50;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--koyomi-floating-border);
+  border-radius: var(--koyomi-floating-radius);
+  background: var(--koyomi-floating-background);
+  color: var(--koyomi-floating-text);
+  box-shadow: var(--koyomi-floating-shadow);
+  font-family: var(--koyomi-font);
+  font-size: var(--koyomi-font-size);
+  line-height: var(--koyomi-line-height);
+  inset: auto;
+  max-width: calc(100vw - 16px);
+  max-height: calc(100dvh - 16px);
+  overflow: auto;
+  animation: koyomi-in var(--koyomi-transition);
+}
+
+.koyomi-popover[hidden] {
+  display: none;
+}
+
+.koyomi-popover:popover-open {
+  position: fixed;
+}
+
+@keyframes koyomi-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+.koyomi-popover[data-side="top"] {
+  animation-name: koyomi-in-top;
+}
+
+@keyframes koyomi-in-top {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+/* A sheet at the bottom of a narrow screen. */
+.koyomi-popover.koyomi-sheet {
+  position: fixed;
+  inset: auto 0 0 0;
+  width: 100%;
+  max-width: none;
+  max-height: 85dvh;
+  border-radius: var(--koyomi-floating-radius) var(--koyomi-floating-radius) 0 0;
+  padding-bottom: env(safe-area-inset-bottom);
+  animation: koyomi-sheet-in 180ms ease-out;
+}
+
+@keyframes koyomi-sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+.koyomi-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 49;
+  background: var(--koyomi-backdrop);
+}
+
+.koyomi-backdrop[hidden] {
+  display: none;
+}
+
+.koyomi-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--koyomi-space);
+  padding: 0.75rem;
+}
+
+.koyomi-panel-inline {
+  padding: 0;
+}
+
+.koyomi-panel-body {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.koyomi-sheet .koyomi-panel-body {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* Typing a date in words */
+
+.koyomi-typing {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.koyomi-type {
+  width: 100%;
+  min-height: 2.25rem;
+  padding: 0 0.625rem;
+  border: 1px solid var(--koyomi-border);
+  border-radius: var(--koyomi-radius);
+  background: var(--koyomi-background);
+  color: inherit;
+  font: inherit;
+}
+
+.koyomi-type:focus-visible {
+  outline: none;
+  border-color: var(--koyomi-accent);
+  box-shadow: var(--koyomi-focus-ring);
+}
+
+.koyomi-type-preview {
+  min-height: 1.25em;
+  color: var(--koyomi-muted);
+  font-size: var(--koyomi-small);
+}
+
+.koyomi-type-preview.koyomi-no-match {
+  font-style: italic;
+}
+
+/* Presets */
+
+.koyomi-presets {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 8.5rem;
+  padding-inline-end: 0.75rem;
+  border-inline-end: 1px solid var(--koyomi-border);
+}
+
+.koyomi-sheet .koyomi-presets {
+  flex-direction: row;
+  flex-wrap: wrap;
+  padding: 0 0 0.5rem;
+  border: 0;
+  border-bottom: 1px solid var(--koyomi-border);
+}
+
+.koyomi-preset,
+.koyomi-action {
+  min-height: 2rem;
+  padding: 0 0.625rem;
+  border: 1px solid transparent;
+  border-radius: calc(var(--koyomi-radius) - 2px);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: var(--koyomi-small);
+  text-align: start;
+  cursor: pointer;
+}
+
+.koyomi-preset:hover,
+.koyomi-action:hover {
+  background: var(--koyomi-surface);
+}
+
+.koyomi-preset:focus-visible,
+.koyomi-action:focus-visible {
+  outline: none;
+  box-shadow: var(--koyomi-focus-ring);
+}
+
+.koyomi-preset[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.koyomi-action[aria-pressed="true"] {
+  border-color: var(--koyomi-accent);
+  color: var(--koyomi-accent);
+}
+
+.koyomi-footer {
+  display: flex;
+  gap: 0.25rem;
+  justify-content: flex-end;
+}
+
+.koyomi-footer:empty {
+  display: none;
+}
+
+.koyomi-done {
+  background: var(--koyomi-accent);
+  color: var(--koyomi-accent-text);
+}
+
+.koyomi-done:hover {
+  background: color-mix(in oklab, var(--koyomi-accent) 88%, black);
+}
+
+.koyomi-notice {
+  max-width: 22rem;
+  padding: 0.5rem 0.625rem;
+  border-radius: var(--koyomi-radius);
+  background: var(--koyomi-surface);
+  font-size: var(--koyomi-small);
+}
+
+.koyomi-notice[hidden] {
+  display: none;
+}
+
+.koyomi-notice p {
+  margin: 0 0 0.375rem;
+}
+
+/* The calendar */
+
+.koyomi-calendar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.koyomi-calendar[aria-busy="true"] .koyomi-months {
+  opacity: 0.7;
+  transition: opacity 200ms 150ms;
+}
+
+.koyomi-header {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.koyomi-captions {
+  display: flex;
+  flex: 1;
+  justify-content: space-around;
+  gap: 1rem;
+}
+
+.koyomi-caption {
+  flex: 1;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid transparent;
+  border-radius: calc(var(--koyomi-radius) - 2px);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  text-align: center;
+}
+
+button.koyomi-caption {
+  cursor: pointer;
+}
+
+button.koyomi-caption:hover {
+  background: var(--koyomi-surface);
+}
+
+.koyomi-nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: calc(var(--koyomi-radius) - 2px);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.koyomi-nav:hover {
+  background: var(--koyomi-surface);
+}
+
+.koyomi-nav:focus-visible,
+.koyomi-caption:focus-visible {
+  outline: none;
+  box-shadow: var(--koyomi-focus-ring);
+}
+
+.koyomi-months {
+  display: flex;
+  gap: 1.25rem;
+}
+
+.koyomi-calendar:has(.koyomi-more) .koyomi-months {
+  flex-direction: column;
+  max-height: 60dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.koyomi-month > .koyomi-caption {
+  display: block;
+  padding: 0.5rem 0 0.25rem;
+  text-align: start;
+}
+
+.koyomi-grid {
+  border-collapse: separate;
+  border-spacing: 0 2px;
+  table-layout: fixed;
+}
+
+.koyomi-grid th {
+  width: var(--koyomi-day-size);
+  height: 1.75rem;
+  padding: 0;
+  color: var(--koyomi-muted);
+  font-size: 0.75em;
+  font-weight: 500;
+  text-align: center;
+}
+
+.koyomi-grid th.koyomi-week-number,
+.koyomi-grid tbody th {
+  width: 2rem;
+  color: var(--koyomi-muted);
+  font-size: 0.6875em;
+  font-variant-numeric: tabular-nums;
+}
+
+.koyomi-grid td {
+  position: relative;
+  width: var(--koyomi-day-size);
+  height: var(--koyomi-day-size);
+  padding: 0;
+  text-align: center;
+}
+
+.koyomi-day {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: var(--koyomi-day-size);
+  height: var(--koyomi-day-size);
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--koyomi-radius);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  cursor: pointer;
+  transition: background var(--koyomi-transition), color var(--koyomi-transition);
+}
+
+.koyomi-day:hover {
+  background: var(--koyomi-surface);
+}
+
+.koyomi-day:focus-visible {
+  outline: none;
+  box-shadow: var(--koyomi-focus-ring);
+}
+
+.koyomi-day-label {
+  margin-top: 0.125rem;
+  color: var(--koyomi-muted);
+  font-size: 0.625em;
+  white-space: nowrap;
+}
+
+.koyomi-day[data-tone] .koyomi-day-label {
+  color: var(--koyomi-tone, var(--koyomi-muted));
+}
+
+.koyomi-day-marks {
+  position: absolute;
+  bottom: 0.1875rem;
+  display: flex;
+  gap: 2px;
+}
+
+/* With a label under the number, the marks go to the top corner. */
+.koyomi-day:has(.koyomi-day-label) .koyomi-day-marks {
+  top: 0.1875rem;
+  bottom: auto;
+  inset-inline-end: 0.1875rem;
+  flex-direction: column;
+}
+
+.koyomi-mark {
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--koyomi-tone, var(--koyomi-accent));
+}
+
+[data-tone="accent"] {
+  --koyomi-tone: var(--koyomi-tone-accent);
+}
+
+[data-tone="success"] {
+  --koyomi-tone: var(--koyomi-tone-success);
+}
+
+[data-tone="warning"] {
+  --koyomi-tone: var(--koyomi-tone-warning);
+}
+
+[data-tone="danger"] {
+  --koyomi-tone: var(--koyomi-tone-danger);
+}
+
+[data-tone="muted"] {
+  --koyomi-tone: var(--koyomi-tone-muted);
+}
+
+.koyomi-outside .koyomi-day {
+  color: var(--koyomi-muted);
+  opacity: 0.6;
+}
+
+.koyomi-weekend .koyomi-day {
+  color: var(--koyomi-weekend);
+}
+
+.koyomi-holiday .koyomi-day {
+  color: var(--koyomi-holiday);
+}
+
+.koyomi-holiday .koyomi-day-number {
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+
+.koyomi-today .koyomi-day {
+  font-weight: 700;
+  color: var(--koyomi-today);
+}
+
+.koyomi-today .koyomi-day::after {
+  content: "";
+  position: absolute;
+  bottom: 0.25rem;
+  width: 1rem;
+  height: 2px;
+  border-radius: 1px;
+  background: currentColor;
+}
+
+.koyomi-today .koyomi-day:has(.koyomi-day-marks)::after,
+.koyomi-today .koyomi-day:has(.koyomi-day-label)::after {
+  display: none;
+}
+
+.koyomi-disabled .koyomi-day,
+.koyomi-day[aria-disabled="true"] {
+  color: var(--koyomi-disabled);
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in oklab, var(--koyomi-disabled) 60%, transparent);
+  cursor: default;
+}
+
+.koyomi-day[aria-disabled="true"]:hover {
+  background: transparent;
+}
+
+/* A range: a band behind the days between its ends, with the ends filled. */
+
+.koyomi-range-middle::before,
+.koyomi-range-preview::before,
+.koyomi-range-start:not(.koyomi-range-end)::before,
+.koyomi-range-end:not(.koyomi-range-start)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--koyomi-range);
+}
+
+.koyomi-range-preview::before {
+  background: var(--koyomi-range-preview);
+}
+
+.koyomi-range-start::before {
+  inset-inline-start: 50%;
+}
+
+.koyomi-range-end::before {
+  inset-inline-end: 50%;
+}
+
+tr > .koyomi-range-middle:first-of-type::before,
+tr > .koyomi-range-preview:first-of-type::before {
+  border-start-start-radius: var(--koyomi-radius);
+  border-end-start-radius: var(--koyomi-radius);
+}
+
+tr > .koyomi-range-middle:last-child::before,
+tr > .koyomi-range-preview:last-child::before {
+  border-start-end-radius: var(--koyomi-radius);
+  border-end-end-radius: var(--koyomi-radius);
+}
+
+.koyomi-selected:not(.koyomi-range-middle) .koyomi-day,
+.koyomi-range-start .koyomi-day,
+.koyomi-range-end .koyomi-day {
+  background: var(--koyomi-accent);
+  color: var(--koyomi-accent-text);
+  text-decoration: none;
+}
+
+.koyomi-selected:not(.koyomi-range-middle) .koyomi-day-label,
+.koyomi-range-start .koyomi-day-label,
+.koyomi-range-end .koyomi-day-label {
+  color: inherit;
+}
+
+.koyomi-range-preview.koyomi-range-start:not(.koyomi-selected) .koyomi-day,
+.koyomi-range-preview.koyomi-range-end:not(.koyomi-selected) .koyomi-day {
+  background: color-mix(in oklab, var(--koyomi-accent) 18%, var(--koyomi-background));
+  color: inherit;
+}
+
+/* A week: the whole row. */
+
+.koyomi-week-row:hover td::before,
+.koyomi-week-hover td::before,
+.koyomi-week-selected td::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--koyomi-range-preview);
+}
+
+.koyomi-week-selected td::before {
+  background: var(--koyomi-range);
+}
+
+.koyomi-week-selected td:first-of-type::before,
+.koyomi-week-hover td:first-of-type::before {
+  border-start-start-radius: var(--koyomi-radius);
+  border-end-start-radius: var(--koyomi-radius);
+}
+
+.koyomi-week-selected td:last-child::before,
+.koyomi-week-hover td:last-child::before {
+  border-start-end-radius: var(--koyomi-radius);
+  border-end-end-radius: var(--koyomi-radius);
+}
+
+.koyomi-week-selected .koyomi-day {
+  font-weight: 600;
+}
+
+/* Months and years */
+
+.koyomi-month-grid,
+.koyomi-year-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: calc(var(--koyomi-day-size) * 7);
+}
+
+.koyomi-cells-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.25rem;
+}
+
+.koyomi-cell {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0 0.25rem;
+  border: 1px solid transparent;
+  border-radius: var(--koyomi-radius);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.koyomi-cell:hover {
+  background: var(--koyomi-surface);
+}
+
+.koyomi-cell:focus-visible {
+  outline: none;
+  box-shadow: var(--koyomi-focus-ring);
+}
+
+.koyomi-cell[aria-current="date"] {
+  color: var(--koyomi-today);
+  font-weight: 700;
+}
+
+.koyomi-selected > .koyomi-cell {
+  background: var(--koyomi-accent);
+  color: var(--koyomi-accent-text);
+}
+
+.koyomi-cell[aria-disabled="true"] {
+  color: var(--koyomi-disabled);
+  cursor: default;
+}
+
+/* Times */
+
+.koyomi-times {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 6.5rem;
+  max-height: 17rem;
+  overflow-y: auto;
+  padding: 0.125rem;
+  border-radius: var(--koyomi-radius);
+  outline: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.koyomi-calendar + .koyomi-times {
+  padding-inline-start: 0.75rem;
+  border-inline-start: 1px solid var(--koyomi-border);
+  border-radius: 0;
+}
+
+.koyomi-sheet .koyomi-calendar + .koyomi-times {
+  max-height: 12rem;
+  padding: 0.5rem 0 0;
+  border: 0;
+  border-top: 1px solid var(--koyomi-border);
+}
+
+.koyomi-times:focus-visible {
+  box-shadow: var(--koyomi-focus-ring);
+}
+
+.koyomi-time {
+  padding: 0.375rem 0.625rem;
+  border-radius: calc(var(--koyomi-radius) - 2px);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.koyomi-time:hover,
+.koyomi-times:focus-visible .koyomi-time[data-active] {
+  background: var(--koyomi-surface);
+}
+
+.koyomi-time[aria-selected="true"] {
+  background: var(--koyomi-accent);
+  color: var(--koyomi-accent-text);
+}
+
+.koyomi-time[aria-disabled="true"] {
+  color: var(--koyomi-disabled);
+  text-decoration: line-through;
+  cursor: default;
+}
+
+.koyomi-times-empty {
+  padding: 0.5rem;
+  color: var(--koyomi-muted);
+  font-size: var(--koyomi-small);
+}
+
+/* Recurrence */
+
+.koyomi-recurrence {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  min-width: 18rem;
+}
+
+.koyomi-recurrence-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.koyomi-recurrence-details[hidden],
+.koyomi-weekdays[hidden],
+.koyomi-choices[hidden] {
+  display: none;
+}
+
+.koyomi-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.koyomi-row > label,
+.koyomi-label {
+  min-width: 4.5rem;
+  color: var(--koyomi-muted);
+  font-size: var(--koyomi-small);
+}
+
+.koyomi-select,
+.koyomi-number,
+.koyomi-date-input {
+  min-height: 2rem;
+  padding: 0 0.5rem;
+  border: 1px solid var(--koyomi-border);
+  border-radius: calc(var(--koyomi-radius) - 2px);
+  background: var(--koyomi-background);
+  color: inherit;
+  font: inherit;
+}
+
+.koyomi-number {
+  width: 4.5rem;
+}
+
+.koyomi-select:focus-visible,
+.koyomi-number:focus-visible,
+.koyomi-date-input:focus-visible {
+  outline: none;
+  border-color: var(--koyomi-accent);
+  box-shadow: var(--koyomi-focus-ring);
+}
+
+.koyomi-weekdays {
+  display: flex;
+  gap: 0.25rem;
+  padding-inline-start: 5rem;
+}
+
+.koyomi-weekday {
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 1px solid var(--koyomi-border);
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.75em;
+  cursor: pointer;
+}
+
+.koyomi-weekday[aria-pressed="true"] {
+  border-color: var(--koyomi-accent);
+  background: var(--koyomi-accent);
+  color: var(--koyomi-accent-text);
+}
+
+.koyomi-weekday:focus-visible {
+  outline: none;
+  box-shadow: var(--koyomi-focus-ring);
+}
+
+.koyomi-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding-inline-start: 5rem;
+}
+
+.koyomi-choice {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.koyomi-choice input[type="radio"] {
+  accent-color: var(--koyomi-accent);
+}
+
+.koyomi-inline-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.koyomi-recurrence-summary {
+  margin: 0;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--koyomi-border);
+  font-weight: 500;
+}
+
+.koyomi-occurrences {
+  margin: 0;
+  padding-inline-start: 1.25rem;
+  color: var(--koyomi-muted);
+  font-size: var(--koyomi-small);
+}
+
+/* Forced colours (Windows High Contrast): the system draws the states. */
+
+@media (forced-colors: active) {
+  .koyomi-selected .koyomi-day,
+  .koyomi-range-start .koyomi-day,
+  .koyomi-range-end .koyomi-day,
+  .koyomi-time[aria-selected="true"],
+  .koyomi-weekday[aria-pressed="true"],
+  .koyomi-selected > .koyomi-cell {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  .koyomi-range-middle::before,
+  .koyomi-range-preview::before {
+    border-block: 1px solid Highlight;
+    background: transparent;
+  }
+
+  .koyomi-day[aria-disabled="true"] {
+    color: GrayText;
+  }
+
+  .koyomi-day:focus-visible,
+  .koyomi-segment:focus {
+    outline: 2px solid Highlight;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .koyomi-popover,
+  .koyomi-popover.koyomi-sheet {
+    animation: none;
+  }
+
+  .koyomi *,
+  .koyomi-popover * {
+    transition: none !important;
+  }
+}
+
+/* In a sheet, the months take the width of the screen. */
+.koyomi-sheet .koyomi-grid {
+  width: 100%;
+}
+
+.koyomi-sheet .koyomi-grid td {
+  width: auto;
+}
