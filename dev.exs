@@ -7,7 +7,8 @@
 # The bundle rebuilds and the page reloads on a change.
 #
 # Query params of every page: `locale` (a BCP 47 locale), `calendar` (an
-# Intl calendar id), `zone` (an IANA time zone), `theme=sumi`.
+# Intl calendar id), `zone` (an IANA time zone), `theme=sumi`,
+# `icons=custom` (icons of the app, with setIcons).
 #
 # Environment:
 #
@@ -185,7 +186,15 @@ defmodule KoyomiDev.Layouts do
         <script type="module">
           import { Socket } from "phoenix"
           import { LiveSocket } from "phoenix_live_view"
-          import { Koyomi, mountKoyomi } from "koyomi"
+          import { Koyomi, mountKoyomi, setIcons } from "koyomi"
+
+          if (new URLSearchParams(location.search).get("icons") === "custom") {
+            setIcons({
+              calendar: '<svg class="app-icon" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="4" width="18" height="17" rx="2"/></svg>',
+              chevron: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5l9 7-9 7z"/></svg>',
+              close: () => Object.assign(document.createElement("span"), { className: "app-close" })
+            })
+          }
 
           if (document.querySelector("[data-phx-main]")) {
             const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")

@@ -129,11 +129,19 @@
   width: var(--koyomi-icon-size);
   height: var(--koyomi-icon-size);
   flex: none;
+}
+
+/* Koyomi's own icons; an app's icon (setIcons) keeps its fill and stroke. */
+.koyomi-icon:not([data-custom]) {
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.75;
+  stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+.koyomi-icon-mirrored {
+  transform: scaleX(-1);
 }
 
 /* The field */
