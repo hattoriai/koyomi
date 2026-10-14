@@ -2,21 +2,26 @@
 // monthly, yearly), every how many, on which weekdays or which day of the
 // month, and until when; with the rule written out in words and the next
 // dates. It writes an RFC 5545 rule (rrule.ts), the same that
-// Koyomi.Recurrence reads on the server.
+// Koyomi.Recurrence reads on the server. The day of the end is picked on a
+// Koyomi calendar that opens below the choices of the end.
 
+import { Calendar } from "./calendar";
 import type { Words } from "./config";
 import { el } from "./dom";
 import { type Day, formatISO, parseISO, toYMD, weekday } from "./iso";
 import { type CalendarSystem, type WeekInfo, weekdayNames } from "./locale";
 import { type Freq, type Rule, describeRule, emptyRule, formatRule, occurrences, parseRule } from "./rrule";
+import { Rules } from "./rules";
 
 export interface RecurrenceOptions {
   id: string;
   locale: string;
   words: Words;
   start: Day;
+  today: Day;
   cal: CalendarSystem;
   week: WeekInfo;
+  rtl: boolean;
   onChange: (rule: string | null) => void;
 }
 
@@ -32,7 +37,9 @@ export class RecurrenceEditor {
   private monthly!: HTMLElement;
   private ends!: HTMLElement;
   private count!: HTMLInputElement;
-  private until!: HTMLInputElement;
+  private until!: HTMLButtonElement;
+  private untilPanel!: HTMLElement;
+  private untilCalendar!: Calendar;
   private summaryText!: HTMLElement;
   private next!: HTMLElement;
   private details!: HTMLElement;
@@ -88,7 +95,14 @@ export class RecurrenceEditor {
     this.monthly = el("div", { class: "koyomi-choices", role: "radiogroup" });
     this.ends = el("div", { class: "koyomi-choices", role: "radiogroup", "aria-labelledby": this.id("ends-label") });
     this.count = el("input", { type: "number", min: "1", max: "999", class: "koyomi-number", inputmode: "numeric", "aria-label": words.count("occurrences", 2) });
-    this.until = el("input", { type: "date", class: "koyomi-date-input", "aria-label": words.t("endsOn") });
+    this.until = el("button", {
+      type: "button",
+      id: this.id("until"),
+      class: "koyomi-date-input koyomi-until",
+      "aria-expanded": "false",
+      "aria-controls": this.id("until-calendar"),
+    });
+    this.until.addEventListener("click", () => this.toggleUntil(this.until.getAttribute("aria-expanded") !== "true"));
     this.count.addEventListener("input", () => {
       const n = Number(this.count.value);
       if (this.rule && Number.isInteger(n) && n >= 1) {
@@ -97,13 +111,33 @@ export class RecurrenceEditor {
         this.emit(false);
       }
     });
-    this.until.addEventListener("input", () => {
-      const day = parseISO(this.until.value);
-      if (this.rule && day !== null) {
-        this.rule.until = formatISO(day);
-        this.rule.count = null;
-        this.emit(false);
-      }
+    // The end is on the start or after it, as Koyomi.Recurrence counts
+    // the dates from the start.
+    this.untilCalendar = new Calendar({
+      id: this.id("until-calendar"),
+      cal: this.options.cal,
+      locale: this.options.locale,
+      words,
+      rules: new Rules({ min: formatISO(this.options.start) }),
+      weekInfo: this.options.week,
+      today: this.options.today,
+      months: 1,
+      weekNumbers: false,
+      outsideDays: true,
+      rtl: this.options.rtl,
+      lowest: "days",
+      holidays: {},
+      content: () => undefined,
+      onPick: (day) => this.pickUntil(day),
+    });
+    this.untilPanel = el("div", { id: this.id("until-calendar"), class: "koyomi-until-calendar", hidden: "" }, this.untilCalendar.root);
+    // Escape closes the calendar of the end, not the whole popover.
+    this.untilPanel.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      event.stopPropagation();
+      this.toggleUntil(false);
+      this.until.focus();
     });
 
     this.summaryText = el("p", { class: "koyomi-recurrence-summary", "aria-live": "polite" });
@@ -117,6 +151,7 @@ export class RecurrenceEditor {
       this.monthly,
       el("div", { class: "koyomi-row" }, el("span", { id: this.id("ends-label"), class: "koyomi-label" }, words.t("ends"))),
       this.ends,
+      this.untilPanel,
     );
 
     this.root.append(el("div", { class: "koyomi-row" }, el("label", { for: this.id("freq") }, words.t("repeat")), this.freq), this.details, this.summaryText, this.next);
@@ -156,6 +191,30 @@ export class RecurrenceEditor {
     if (next.length === 0) return;
     this.rule.byDay = next.sort((a, b) => a.weekday - b.weekday);
     this.emit();
+  }
+
+  /** The end date of the rule, or the default: 90 days after the start. */
+  private untilDay(): Day {
+    return (this.rule?.until ? parseISO(this.rule.until.slice(0, 10)) : null) ?? this.options.start + 90;
+  }
+
+  private toggleUntil(open: boolean): void {
+    this.untilPanel.hidden = !open;
+    this.until.setAttribute("aria-expanded", String(open));
+    if (!open) return;
+    const day = this.untilDay();
+    this.untilCalendar.setSelection({ kind: "single", day });
+    this.untilCalendar.showDay(day);
+    this.untilCalendar.focus();
+  }
+
+  private pickUntil(day: Day): void {
+    if (!this.rule) return;
+    this.rule.until = formatISO(day);
+    this.rule.count = null;
+    this.toggleUntil(false);
+    this.emit();
+    this.until.focus();
   }
 
   private emit(redraw = true): void {
@@ -245,11 +304,13 @@ export class RecurrenceEditor {
       rule.until = null;
       rule.count = Number(this.count.value) || 10;
     });
-    this.until.value = rule.until ? rule.until.slice(0, 10) : formatISO(this.options.start + 90);
+    const untilDay = this.untilDay();
+    this.until.textContent = this.options.cal.format(untilDay, "medium");
     this.until.disabled = mode !== "until";
+    if (mode !== "until") this.toggleUntil(false);
     choice("until", words.t("endsOn"), this.until, () => {
       rule.count = null;
-      rule.until = this.until.value || formatISO(this.options.start + 90);
+      rule.until = formatISO(untilDay);
     });
   }
 

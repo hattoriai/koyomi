@@ -73,6 +73,35 @@ test.describe("the recurrence picker", () => {
     await expect(picker(page, "event_repeat_picker").locator(".koyomi-summary")).toContainText("Weekly");
   });
 
+  test("ending on a day picked on the calendar", async ({ page }) => {
+    const popover = await openPopover(page, "event_repeat_picker");
+    await popover.getByLabel("Repeat").selectOption("daily");
+    await popover.locator("input[type=radio][value=until]").check();
+    const now = await today(page);
+    const first = `FREQ=DAILY;UNTIL=${addDays(now, 90).replaceAll("-", "")}`;
+    await expectPosted(page, "repeat", first);
+    await expect(popover.locator("input[type=date]")).toHaveCount(0);
+    const until = popover.locator(".koyomi-until");
+    await until.click();
+    await expect(until).toHaveAttribute("aria-expanded", "true");
+    const calendar = popover.locator(".koyomi-until-calendar");
+    await expect(calendar).toBeVisible();
+    // The calendar opens on the end; the days before the start are disabled.
+    for (let i = 0; i < 3; i++) await page.keyboard.press("PageUp");
+    await expect(dayButton(calendar, addDays(now, -1))).toHaveAttribute("aria-disabled", "true");
+    // Escape closes the calendar of the end, and the popover stays open.
+    await page.keyboard.press("Escape");
+    await expect(calendar).toBeHidden();
+    await expect(popover).toBeVisible();
+    await expect(until).toBeFocused();
+    await until.click();
+    await page.keyboard.press("PageUp");
+    await page.keyboard.press("Enter");
+    await expect(calendar).toBeHidden();
+    await expect.poll(async () => (await posted(page)).repeat).toMatch(/^FREQ=DAILY;UNTIL=\d{8}$/);
+    await expect.poll(async () => (await posted(page)).repeat).not.toBe(first);
+  });
+
   test("does not repeat", async ({ page }) => {
     const popover = await openPopover(page, "event_repeat_picker");
     await popover.getByLabel("Repeat").selectOption("daily");
