@@ -148,7 +148,7 @@ defmodule Koyomi.Recurrence do
 
     case text |> String.split(";") |> Enum.reject(&(&1 == "")) do
       [] -> {:error, "The rule is empty"}
-      parts -> parse_parts(parts, %__MODULE__{}, MapSet.new())
+      parts -> parse_parts(parts, %__MODULE__{}, %{})
     end
   end
 
@@ -175,7 +175,7 @@ defmodule Koyomi.Recurrence do
     with {:ok, name, value} <- split_part(part),
          :ok <- check_name(name, seen),
          {:ok, rule} <- parse_value(name, value, rule) do
-      parse_parts(rest, rule, MapSet.put(seen, name))
+      parse_parts(rest, rule, Map.put(seen, name, true))
     end
   end
 
@@ -190,7 +190,7 @@ defmodule Koyomi.Recurrence do
   defp check_name(name, seen) do
     cond do
       name not in @parts -> {:error, name <> " is not supported"}
-      MapSet.member?(seen, name) -> {:error, name <> " appears twice"}
+      Map.has_key?(seen, name) -> {:error, name <> " appears twice"}
       true -> :ok
     end
   end
