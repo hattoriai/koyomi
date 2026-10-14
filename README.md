@@ -1,6 +1,6 @@
 # Koyomi
 
-![Koyomi — Dates for Phoenix](https://hexdocs.pm/koyomi/media/banner.png)
+![Koyomi — Dates for Phoenix](https://raw.githubusercontent.com/hattoriai/koyomi/main/media/banner.png)
 
 Koyomi (暦, "calendar") is dates for Phoenix. It gives your app:
 
