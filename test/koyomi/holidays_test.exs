@@ -407,7 +407,7 @@ defmodule Koyomi.HolidaysTest do
       end
 
       assert_raise ArgumentError, ~r/invalid holiday source 42/, fn ->
-        apply(Holidays, :list, [42, 2027])
+        Holidays.list(42, 2027)
       end
     end
 
