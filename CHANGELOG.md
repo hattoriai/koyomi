@@ -7,6 +7,19 @@ and Koyomi follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- `setIcons` in the JavaScript bundle replaces the icons of the pickers
+  with the app's own (an SVG, or an element such as a Phoenix Heroicon),
+  and each icon has a `data-icon` attribute for styles. See the Icons
+  section of the theming guide.
+
+### Changed
+
+- The icons of the pickers are Lucide's (`calendar`, `clock`, `repeat`,
+  `x`, `chevron-right`), as in Kotoba, drawn with a stroke of 2 instead
+  of 1.75. `NOTICE` has the Lucide and Feather licences.
+
 ## [0.1.1] - 2026-10-14
 
 ### Added

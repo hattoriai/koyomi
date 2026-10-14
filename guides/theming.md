@@ -213,6 +213,53 @@ Koyomi does not load the Outfit font; load it yourself if you want it.
 
 Import `koyomi-sumi.css` from `app.css`, after `koyomi.css`.
 
+## Icons
+
+The pickers draw five icons from [Lucide](https://lucide.dev): the
+calendar button (`calendar`), the button of a time picker (`clock`) and
+of a recurrence picker (`repeat`), the clear button and a chip's remove
+button (`close`), and the previous and next buttons of the calendar
+(`chevron`). Each is an element with the class `koyomi-icon` and a
+`data-icon` attribute with its name, hidden from assistive technology;
+the button around it has the label. The icons are drawn in
+`currentColor` with a stroke of 2, at `--koyomi-icon-size`.
+
+To use the icons of your app, call `setIcons` before the pickers mount,
+that is before `liveSocket.connect()` or `mountKoyomi()`:
+
+```js
+import { Koyomi, setIcons } from "koyomi"
+
+setIcons({
+  // The markup of one element, an <svg> as a rule.
+  calendar: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">…</svg>`,
+  // Or a function that makes a new element: here a Heroicon of Phoenix.
+  close: () => Object.assign(document.createElement("span"), { className: "hero-x-mark" })
+})
+```
+
+The names are `chevron`, `calendar`, `clock`, `repeat` and `close`; a
+name left out keeps Koyomi's icon, and `null` brings it back. The
+`chevron` points to the right, to the next month: Koyomi mirrors it for
+the previous month, and swaps the two in a right-to-left language.
+
+Koyomi adds `koyomi-icon`, `data-icon`, `aria-hidden="true"` and a
+`data-custom` attribute to the element, and keeps its own classes. The
+size of `--koyomi-icon-size` applies to it, but not the fill and stroke
+of Koyomi's icons, so a filled icon stays filled.
+
+Without JavaScript, an icon can be replaced in CSS by its `data-icon`,
+for instance with a mask:
+
+```css
+.koyomi-icon[data-icon="calendar"] {
+  stroke: none;
+  background-color: currentColor;
+  mask: url("/images/calendar.svg") center / contain no-repeat;
+}
+.koyomi-icon[data-icon="calendar"] > * { display: none; }
+```
+
 ## Classes
 
 Every part of a picker has a `koyomi-*` class, for styles of your own.

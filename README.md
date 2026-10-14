@@ -240,5 +240,6 @@ and pushes `v<version>`.
 
 Koyomi is released under the MIT License. See `LICENSE`.
 
-The table of week data by region follows the Unicode CLDR (Unicode
+The icons are from Lucide (ISC License; some from Feather, MIT License),
+and the table of week data by region follows the Unicode CLDR (Unicode
 License v3). See `NOTICE`.
