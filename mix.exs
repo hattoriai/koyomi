@@ -18,7 +18,8 @@ defmodule Koyomi.MixProject do
       dialyzer: [
         plt_add_apps: [:mix, :ex_unit, :esbuild, :postgrex],
         plt_core_path: "priv/plts",
-        plt_file: {:no_warn, "priv/plts/project.plt"}
+        plt_file: {:no_warn, "priv/plts/project.plt"},
+        ignore_warnings: ".dialyzer_ignore.exs"
       ],
       package: package(),
       docs: docs(),

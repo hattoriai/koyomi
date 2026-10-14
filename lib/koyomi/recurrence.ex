@@ -452,8 +452,9 @@ defmodule Koyomi.Recurrence do
   defp check_count_and_until(_rule), do: nil
 
   defp check_months(rule) do
-    if month = Enum.find(rule.by_month, &(&1 not in 1..12)),
-      do: {:error, "BYMONTH has an invalid month: #{month}"}
+    rule.by_month
+    |> Enum.find(&(&1 not in 1..12))
+    |> invalid("BYMONTH has an invalid month: ")
   end
 
   defp check_weekly_month_days(%{freq: :weekly, by_month_day: [_ | _]}),
@@ -462,13 +463,16 @@ defmodule Koyomi.Recurrence do
   defp check_weekly_month_days(_rule), do: nil
 
   defp check_month_days(rule) do
-    if day = Enum.find(rule.by_month_day, &(&1 == 0 or abs(&1) > 31)),
-      do: {:error, "BYMONTHDAY has an invalid day: #{day}"}
+    rule.by_month_day
+    |> Enum.find(&(&1 == 0 or abs(&1) > 31))
+    |> invalid("BYMONTHDAY has an invalid day: ")
   end
 
   defp check_days(rule) do
-    if entry = Enum.find(rule.by_day, &(not valid_day?(&1, rule.freq))),
-      do: {:error, "BYDAY has an invalid day: " <> format_day(entry)}
+    case Enum.find(rule.by_day, &(not valid_day?(&1, rule.freq))) do
+      nil -> nil
+      entry -> {:error, "BYDAY has an invalid day: " <> format_day(entry)}
+    end
   end
 
   defp check_day_ordinals(%{freq: freq, by_day: by_day}) when freq in [:daily, :weekly] do
@@ -479,9 +483,14 @@ defmodule Koyomi.Recurrence do
   defp check_day_ordinals(_rule), do: nil
 
   defp check_positions(rule) do
-    if position = Enum.find(rule.by_set_pos, &(&1 == 0 or abs(&1) > 366)),
-      do: {:error, "BYSETPOS has an invalid position: #{position}"}
+    rule.by_set_pos
+    |> Enum.find(&(&1 == 0 or abs(&1) > 366))
+    |> invalid("BYSETPOS has an invalid position: ")
   end
+
+  # The error of the first value that a check found, or nil.
+  defp invalid(nil, _message), do: nil
+  defp invalid(value, message), do: {:error, message <> Integer.to_string(value)}
 
   defp check_lone_positions(%{by_set_pos: [_ | _], by_day: [], by_month_day: [], by_month: []}),
     do: {:error, "BYSETPOS needs BYDAY, BYMONTHDAY or BYMONTH"}

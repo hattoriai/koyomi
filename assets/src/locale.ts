@@ -363,15 +363,19 @@ const RTL_LANGUAGES = new Set(["ar", "he", "iw", "fa", "ur", "ps", "yi", "ji", "
 /** True when the locale is written right to left. */
 export function rtl(locale: string): boolean {
   const value = intlLocale(locale) as Intl.Locale & { getTextInfo?: () => { direction?: string }; textInfo?: { direction?: string } };
+  // A script written in the locale decides; then the language tables,
+  // since an engine with older CLDR data says "ltr" for a language it does
+  // not know (Dhivehi in Node 20); then the engine; then the likely script.
+  if (value.script) return RTL_SCRIPTS.has(value.script);
+  if (RTL_LANGUAGES.has(value.language)) return true;
   try {
     const info = typeof value.getTextInfo === "function" ? value.getTextInfo() : value.textInfo;
     if (info?.direction) return info.direction === "rtl";
   } catch {
-    // Fall through to the tables.
+    // Fall through to the script.
   }
-  const script = value.script ?? value.maximize().script;
-  if (script) return RTL_SCRIPTS.has(script);
-  return RTL_LANGUAGES.has(value.language);
+  const script = value.maximize().script;
+  return script ? RTL_SCRIPTS.has(script) : false;
 }
 
 // Relative labels.

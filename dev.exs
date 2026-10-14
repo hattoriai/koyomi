@@ -117,23 +117,22 @@ defmodule KoyomiDev.Rooms do
 
   def slots(range, _id) do
     Map.new(range, fn date ->
-      if Date.day_of_week(date) in [6, 7] do
-        {date, [slots: []]}
-      else
-        slots =
-          for hour <- 9..16, minute <- [0, 30] do
-            time = Time.new!(hour, minute, 0)
-
-            %{
-              time: time,
-              label: Calendar.strftime(time, "%H:%M"),
-              disabled: rem(date.day + hour, 4) == 0
-            }
-          end
-
-        {date, [slots: slots, marks: 1]}
-      end
+      if Date.day_of_week(date) in [6, 7],
+        do: {date, [slots: []]},
+        else: {date, [slots: day_slots(date), marks: 1]}
     end)
+  end
+
+  defp day_slots(date) do
+    for hour <- 9..16, minute <- [0, 30] do
+      time = Time.new!(hour, minute, 0)
+
+      %{
+        time: time,
+        label: Calendar.strftime(time, "%H:%M"),
+        disabled: rem(date.day + hour, 4) == 0
+      }
+    end
   end
 
   def slow(range, id) do
