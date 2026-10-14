@@ -7,6 +7,8 @@ and Koyomi follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-10-14
+
 ### Added
 
 - `setIcons` in the JavaScript bundle replaces the icons of the pickers
@@ -19,6 +21,13 @@ and Koyomi follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - The icons of the pickers are Lucide's (`calendar`, `clock`, `repeat`,
   `x`, `chevron-right`), as in Kotoba, drawn with a stroke of 2 instead
   of 1.75. `NOTICE` has the Lucide and Feather licences.
+
+### Fixed
+
+- The end day of a recurrence ("Ends on") is picked on a Koyomi calendar
+  that opens in the popover, and no longer on the browser's date input.
+  It follows the locale and the theme, and the days before the start
+  are disabled. Escape closes the calendar and keeps the popover open.
 
 ## [0.1.1] - 2026-10-14
 

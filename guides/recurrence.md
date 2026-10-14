@@ -30,7 +30,8 @@ Wednesday"), or "Does not repeat". Its popover has:
   ("On day 15") and its weekday in the month ("On the third Monday", or
   "On the last Friday" when the start is in the last week of its month).
 * Ends: never, after a number of times (10 at first), or on a day (90
-  days after the start at first).
+  days after the start at first), picked on a calendar that opens below
+  the choices. The days before the start are disabled.
 * The rule in a sentence, and the next five dates.
 
 A new weekly rule takes the weekday of the start. A monthly rule takes

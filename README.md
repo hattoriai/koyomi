@@ -27,6 +27,18 @@ Koyomi (暦, "calendar") is dates for Phoenix. It gives your app:
 The pickers are a prebuilt JavaScript bundle in the Hex package. Your app
 does not run Node.js for them: you add the hook and one style sheet.
 
+## Try it: Notebook
+
+![Koyomi in Notebook: a due date, a range of days, a repeat rule, and a day and time picker open on its time slots, with the weekends and the past days disabled by the rules](https://raw.githubusercontent.com/hattoriai/koyomi/main/media/notebook-pickers.png)
+
+[Notebook](https://github.com/hattoriai/notebook) is a complete Phoenix
+app made with Koyomi and Kotoba. Each page has a due date, the days it
+covers, a review on a day and a time from the free slots, and a repeat
+rule; the changeset checks the same rules as the calendar, and the
+notebook's own calendar shows the days of every page. Clone it, run
+`mix setup` and `mix phx.server`, and sign in as Hattori Hanzo (its
+README has the details) to try every picker in your browser.
+
 ## What the pickers do
 
 | | |

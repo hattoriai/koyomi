@@ -406,8 +406,10 @@ export class Picker {
         locale: config.locale,
         words: this.words,
         start: parseISO(config.start ?? "") ?? this.today,
+        today: this.today,
         cal: this.cal,
         week: this.week,
+        rtl: rtl(config.locale),
         onChange: (rule) => this.setRecurrence(rule, true),
       });
       panel.append(this.recurrence.root);

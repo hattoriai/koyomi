@@ -1115,6 +1115,24 @@ tr > .koyomi-range-preview:last-child::before {
   accent-color: var(--koyomi-accent);
 }
 
+.koyomi-until {
+  text-align: start;
+  cursor: pointer;
+}
+
+.koyomi-until:disabled {
+  color: var(--koyomi-muted);
+  cursor: default;
+}
+
+.koyomi-until-calendar {
+  padding-inline-start: 5rem;
+}
+
+.koyomi-until-calendar[hidden] {
+  display: none;
+}
+
 .koyomi-inline-group {
   display: inline-flex;
   align-items: center;
