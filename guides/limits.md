@@ -137,12 +137,14 @@ picker with no zone posts the wall clock, and knows no clock changes.
 pickers, one for each end, and cast their two values as a map with
 `"from"` and `"to"`.
 
-## `Koyomi.DateRange` needs PostgreSQL
+## Ranges outside PostgreSQL
 
 `Koyomi.DateRange` and `Koyomi.DateTimeRange` store PostgreSQL range
-columns (`daterange`, `tstzrange`), and need `:postgrex` to dump and
-load. Without it, they cast but cannot be stored: keep the two ends in
-two fields.
+columns (`daterange`, `tstzrange`) by default. With `storage: :string`
+or `storage: :map` they store an ISO 8601 interval or a map in any
+database (SQLite, MySQL) and in embedded schemas, but the database sees
+text: a query for the ranges that hold a day, or that overlap, needs
+PostgreSQL's range columns, or the two ends in two fields.
 
 A range needs both ends: a range with one end is invalid, and a stored
 range with no bound (infinite) or an empty range reads back as `nil`.

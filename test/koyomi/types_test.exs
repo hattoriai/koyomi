@@ -100,4 +100,20 @@ defmodule Koyomi.TypesTest do
     assert {:ok, ~D[2027-03-15]} = Week.cast(~D[2027-03-21])
     assert :error = Week.cast("2027-W54")
   end
+
+  test "the storage of a range type" do
+    string = Ecto.ParameterizedType.init(DateRange, storage: :string)
+    map = Ecto.ParameterizedType.init(DateTimeRange, storage: :map)
+    range = Date.range(~D[2027-03-01], ~D[2027-03-07])
+
+    assert Ecto.Type.type(string) == :string
+    assert {:ok, "2027-03-01/2027-03-07"} = Ecto.Type.dump(string, range)
+    assert {:ok, ^range} = Ecto.Type.load(string, "2027-03-01/2027-03-07")
+    assert Ecto.Type.type(map) == :map
+    assert Ecto.Type.type(Ecto.ParameterizedType.init(DateRange, [])) == :daterange
+
+    assert_raise ArgumentError, ~r/:storage must be one of/, fn ->
+      Ecto.ParameterizedType.init(DateRange, storage: :csv)
+    end
+  end
 end

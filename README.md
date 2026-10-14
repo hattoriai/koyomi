@@ -17,7 +17,8 @@ Koyomi (暦, "calendar") is dates for Phoenix. It gives your app:
 * `Koyomi.Rules`, the same rules in the browser and in your changeset, so
   that what the calendar disables is what the server refuses;
 * Ecto types for what the pickers post, PostgreSQL `daterange` and
-  `tstzrange` included;
+  `tstzrange` included, and the same ranges as text or JSON for SQLite
+  and MySQL;
 * day content from your LiveView: prices, full days, marks and time
   slots, as for a booking;
 * `Koyomi.Test`, to pick values in `Phoenix.LiveViewTest` with no

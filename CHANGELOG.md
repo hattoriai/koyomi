@@ -7,6 +7,20 @@ and Koyomi follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-10-14
+
+### Added
+
+- SQLite and MySQL: `Koyomi.DateRange` and `Koyomi.DateTimeRange` take
+  `storage: :string` (an ISO 8601 interval in a text column) or
+  `storage: :map` (a JSON column), besides the PostgreSQL range columns
+  of the default `storage: :postgres`. Embedded schemas take them too.
+
+### Fixed
+
+- `Koyomi.Dates` reads back the JSON array of ISO dates that SQLite
+  keeps for an `{:array, :date}` field.
+
 ## [0.1.0] - 2026-10-13
 
 ### Added
