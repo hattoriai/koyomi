@@ -211,9 +211,11 @@ export class RecurrenceEditor {
     choice(words.t("monthDay", { n: day }), !byWeekday, () => {
       rule.byDay = [];
       rule.byMonthDay = [];
+      rule.bySetPos = [];
     });
     choice(words.t("monthWeekday", { nth: nthWord, weekday: weekdayName }), byWeekday, () => {
       rule.byMonthDay = [];
+      rule.bySetPos = [];
       rule.byDay = [{ ordinal, weekday: iso }];
     });
   }

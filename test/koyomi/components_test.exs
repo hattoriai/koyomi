@@ -205,5 +205,13 @@ defmodule Koyomi.ComponentsTest do
     assert value == "FREQ=WEEKLY;BYDAY=MO"
     assert config["start"] == "2027-03-15"
     assert [%{"type" => "text", "name" => "rule"}] = inputs(node)
+
+    # After a phx-change, a field's value is the posted string.
+    html =
+      rendered_to_string(
+        ~H|<Components.recurrence_picker name="rule" start="2027-03-15T09:00" />|
+      )
+
+    assert {_node, %{"start" => "2027-03-15"}, nil} = picker(html, "rule_picker")
   end
 end

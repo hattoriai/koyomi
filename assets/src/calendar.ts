@@ -313,7 +313,7 @@ export class Calendar {
     cell.setAttribute("aria-selected", state.selected ? "true" : "false");
     if (outside) cell.classList.add("koyomi-outside");
     if (day === today) cell.classList.add("koyomi-today");
-    if (disabled) cell.classList.add("koyomi-disabled");
+    if (disabled) cell.classList.add("koyomi-unavailable");
     if (holiday) cell.classList.add("koyomi-holiday");
     if (this.options.weekInfo.weekend.includes(weekday(day))) cell.classList.add("koyomi-weekend");
     if (state.selected) cell.classList.add("koyomi-selected");
@@ -545,9 +545,7 @@ export class Calendar {
   private navigate(step: number): void {
     const { cal } = this.options;
     if (this.view === "days") {
-      const count = 1;
-      let first = this.first;
-      for (let i = 0; i < count; i++) first = step < 0 ? cal.prevMonth(first) : cal.nextMonth(first);
+      const first = step < 0 ? cal.prevMonth(this.first) : cal.nextMonth(this.first);
       this.first = first;
       const offset = this.focused - cal.monthOf(this.focused).start;
       this.focused = first.start + Math.min(Math.max(offset, 0), first.length - 1);

@@ -124,7 +124,7 @@ time with no offset, for a `:naive_datetime` field. The
 | `seconds` | `false` | the field has a seconds segment |
 | `hour_cycle` | the locale's | `"h12"` or `"h23"` |
 | `slots` | `false` | the times of a day are the slots that the LiveView gives (see [Day content](days.md)); the picker also asks for the days |
-| `ambiguous` | `:earlier` | `:earlier` or `:later`, the instant of a wall clock time that happens twice (see [Known limits](limits.md)) |
+| `ambiguous` | `:earlier` | `:earlier` or `:later`, the instant of a wall clock time that happens twice, until the person picks the other (see [Time zones](time_zones.md)) |
 
 ## Recurrence
 
@@ -175,7 +175,7 @@ Every picker has these attributes.
 | `rules` | `nil` | a `Koyomi.Rules`, or its options as a keyword list; give the same to `Koyomi.Changeset` |
 | `min`, `max` | `nil` | shortcuts for the `:min` and `:max` rules; they replace the ones in `rules` |
 | `locale` | `config :koyomi, locale:`, else `"en"` | a BCP 47 locale for names, digits, the order of the fields and the first day of the week |
-| `calendar` | `"gregory"` | the calendar system of the display (see [Locales and calendars](calendars.md)) |
+| `calendar` | the locale's own (`-u-ca-`), else `"gregory"` | the calendar system of the display (see [Locales and calendars](calendars.md)) |
 | `time_zone` | `config :koyomi, time_zone:`, else UTC | the IANA time zone of today and, for a date and time picker, of the wall clock |
 | `first_day` | the locale's | the first day of the week, ISO: 1 is Monday, 7 is Sunday |
 | `presets` | `nil` | the presets beside the calendar (see `Koyomi.Presets`) |
@@ -190,7 +190,7 @@ Every picker has these attributes.
 | `required` | `false` | `required` on the browser's own inputs |
 | `disabled` | `false` | the picker cannot be focused or changed |
 | `readonly` | `false` | the picker shows its value and cannot be changed |
-| `display` | `"medium"` | `short`, `medium`, `long` or `full`; the 0.1 bundle does not read it yet (see [Known limits](limits.md)) |
+| `display` | `"medium"` | `short`, `medium`, `long` or `full`, the length of the dates written out (the chips of the several days picker) |
 | `on_change` | `nil` | an event that the picker pushes with `%{"id" => id, "value" => value}` on each change |
 | `messages` | `nil` | words that replace the built-in ones (see `Koyomi.Messages`) |
 | `class` | `nil` | classes for the picker element |

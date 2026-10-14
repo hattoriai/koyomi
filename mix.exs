@@ -101,6 +101,14 @@ defmodule Koyomi.MixProject do
         "guides/forms.md",
         "guides/rules.md",
         "guides/typing.md",
+        "guides/calendars.md",
+        "guides/time_zones.md",
+        "guides/days.md",
+        "guides/recurrence.md",
+        "guides/testing.md",
+        "guides/theming.md",
+        "guides/accessibility.md",
+        "guides/limits.md",
         "CHANGELOG.md"
       ],
       groups_for_extras: [
@@ -109,7 +117,17 @@ defmodule Koyomi.MixProject do
           "guides/pickers.md",
           "guides/forms.md",
           "guides/rules.md",
-          "guides/typing.md"
+          "guides/typing.md",
+          "guides/calendars.md",
+          "guides/time_zones.md",
+          "guides/days.md",
+          "guides/recurrence.md",
+          "guides/testing.md",
+          "guides/theming.md"
+        ],
+        Reference: [
+          "guides/accessibility.md",
+          "guides/limits.md"
         ]
       ],
       groups_for_modules: [

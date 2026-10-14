@@ -9,9 +9,7 @@ defmodule Koyomi.Test do
         {:ok, view, _html} = live(conn, ~p"/book")
 
         html = pick(view, "booking_stay_picker", Date.range(~D[2027-03-01], ~D[2027-03-07]))
-        assert html =~ "7 nights"
-
-        assert view |> form("#booking-form") |> render_submit() =~ "Booked"
+        assert html =~ "6 nights"
       end
 
   `pick/3` sends the form's `phx-change` with the value in the picker's
@@ -19,6 +17,14 @@ defmodule Koyomi.Test do
   the form as they are. The form must have an `id`. The value is checked
   by the LiveView, not here: a test can pick a day that the rules refuse,
   to see the error.
+
+  The inputs of a picker are not updated in LiveViewTest's copy of the
+  page (they are under `phx-update="ignore"`, as in a browser, where the
+  hook keeps them). To submit, give the form the values:
+
+      view
+      |> form("#booking-form", booking: %{stay: %{from: "2027-03-01", to: "2027-03-07"}})
+      |> render_submit()
 
   `request_days/4` sends the `koyomi:days` event of a picker with `days`
   and returns the reply, to test the day content of a LiveView.
@@ -41,7 +47,7 @@ defmodule Koyomi.Test do
   its offset), a `NaiveDateTime`, a `Koyomi.Recurrence`, an ISO string,
   or `nil` to clear it.
   """
-  @spec pick(%LiveViewTest.View{}, String.t(), term()) :: String.t()
+  @spec pick(struct(), String.t(), term()) :: String.t()
   def pick(view, picker_id, value) when is_binary(picker_id) do
     picker_id = String.trim_leading(picker_id, "#")
     html = view |> LiveViewTest.render() |> LazyHTML.from_fragment()
@@ -140,7 +146,7 @@ defmodule Koyomi.Test do
   from `first` to `last`, as the picker does when it shows them, and
   returns the reply: `%{"days" => %{"2027-03-15" => %{...}}}`.
   """
-  @spec request_days(%LiveViewTest.View{}, String.t(), Date.t(), Date.t()) :: map()
+  @spec request_days(struct(), String.t(), Date.t(), Date.t()) :: map()
   def request_days(view, picker_id, %Date{} = first, %Date{} = last) do
     picker_id = String.trim_leading(picker_id, "#")
     ref = System.unique_integer([:positive])

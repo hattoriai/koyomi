@@ -89,6 +89,7 @@ export class Picker {
   private rrule: string | null = null;
   /** Which of the two instants a repeated wall clock time is. */
   private ambiguous: "earlier" | "later" = "earlier";
+  private built = false;
 
   // The parts of the UI.
   private control: HTMLElement | null = null;
@@ -107,11 +108,14 @@ export class Picker {
   private preview: HTMLElement | null = null;
   private notice: HTMLElement | null = null;
   private message!: HTMLElement;
+  /** Announcements for screen readers, outside the popover, so that they outlive it. */
+  private live!: HTMLElement;
   private recurrence: RecurrenceEditor | null = null;
 
   // Day content from the LiveView.
   private content = new Map<Day, DayContent>();
-  private loaded = new Set<string>();
+  /** The days whose content came (or is coming) from the LiveView. */
+  private loaded = new Set<Day>();
   private pending = new Map<string, [Day, Day]>();
   private refs = 0;
   private loadError = false;
@@ -128,6 +132,7 @@ export class Picker {
       input.addEventListener("focus", () => this.focus());
     }
     this.message = el("div", { class: "koyomi-message", id: `${root.id}-message`, "aria-live": "polite" });
+    this.live = el("div", { class: "koyomi-sr-only", "aria-live": "polite" });
     this.build();
     this.applyServerValue(true);
   }
@@ -143,22 +148,27 @@ export class Picker {
     this.config = readConfig(this.root);
     const config = this.config;
     this.words = new Words(config.messages, config.locale);
-    const plainCalendar = ["month", "year", "week"].includes(config.kind) && config.calendar && !GREGORIAN_LIKE.has(config.calendar);
-    this.cal = calendarSystem(config.locale, plainCalendar ? "gregory" : config.calendar);
+    // A month, week or year picker posts ISO months, weeks and years: its
+    // calendar is Gregorian unless the one asked for (or the locale's own)
+    // has Gregorian months.
+    this.cal = calendarSystem(config.locale, config.calendar);
+    if (["month", "year", "week"].includes(config.kind) && !GREGORIAN_LIKE.has(this.cal.id)) this.cal = calendarSystem(config.locale, "gregory");
+    if (!this.built) this.ambiguous = config.ambiguous ?? "earlier";
+    this.built = true;
     this.week = weekInfo(config.locale);
     if (config.firstDay) this.week = { ...this.week, firstDay: config.firstDay };
     if (config.kind === "week") this.week = { ...this.week, firstDay: 1 };
     this.today = parseISO(config.today) ?? todayIn(config.timeZone);
     this.rules = new Rules(config.rules, (day) => this.content.get(day));
-    this.root.classList.toggle("koyomi-disabled", config.disabled === true);
-    this.root.classList.toggle("koyomi-readonly", config.readonly === true);
+    this.root.classList.toggle("koyomi-is-disabled", config.disabled === true);
+    this.root.classList.toggle("koyomi-is-readonly", config.readonly === true);
     if (rtl(config.locale)) this.root.setAttribute("dir", "rtl");
 
     this.teardownUI();
     const inline = config.inline || config.kind === "calendar";
     if (!inline) this.buildControl();
     if (config.kind !== "time" || !inline) this.buildPanel(inline);
-    this.root.append(this.message);
+    this.root.append(this.message, this.live);
     this.refresh();
   }
 
@@ -335,10 +345,9 @@ export class Picker {
     const twelve = cycle === "h12" || cycle === "h11";
     const periods = dayPeriods(locale);
     const parts = timeFieldOrder(locale, { seconds: this.config.seconds, hourCycle: cycle }) as Part[];
-    const step = this.rules.step ?? 1;
     const specs: Partial<Record<SegmentField, SegmentSpec>> = {
       hour: twelve
-        ? { field: "hour", label: names.hour, placeholder: placeholders.hour, min: 1, max: 12, pad: 2, digits: 2, start: () => 9 }
+        ? { field: "hour", label: names.hour, placeholder: placeholders.hour, min: cycle === "h11" ? 0 : 1, max: cycle === "h11" ? 11 : 12, pad: 2, digits: 2, start: () => 9 }
         : { field: "hour", label: names.hour, placeholder: placeholders.hour, min: 0, max: 23, pad: 2, digits: 2, start: () => 9 },
       minute: { field: "minute", label: names.minute, placeholder: placeholders.minute, min: 0, max: 59, pad: 2, digits: 2, start: () => 0 },
       second: { field: "second", label: names.second, placeholder: placeholders.second, min: 0, max: 59, pad: 2, digits: 2, start: () => 0 },
@@ -360,7 +369,6 @@ export class Picker {
         start: () => 0,
       },
     };
-    void step;
     const segments = new Segments({
       locale,
       parts,
@@ -376,11 +384,9 @@ export class Picker {
     return segments;
   }
 
-  private labelSegments(segments: Segments): void {
-    if (this.config.labelId) segments.setAria("aria-labelledby", this.config.labelId);
-    else if (this.config.label) segments.setAria("aria-label", this.config.label);
-    segments.setAria("role", "group");
-  }
+  // The field (.koyomi-control) is the group with the label; the segments
+  // of the inline picker without a field are not labelled twice.
+  private labelSegments(_segments: Segments): void {}
 
   private hourCycle(): "h11" | "h12" | "h23" | "h24" {
     return this.config.hourCycle ?? localeHourCycle(this.config.locale);
@@ -461,6 +467,7 @@ export class Picker {
         inside: () => [this.control!],
         label: this.labelText || this.words.t("showCalendar"),
         onClose: () => this.onClosed(),
+        returnFocus: () => this.focus(),
         initialFocus: () => (this.kind === "time" ? this.timeList!.root : this.kind === "recurrence" ? this.recurrence!.firstFocus() : this.calendar?.root.querySelector<HTMLElement>("[data-stop]") ?? null),
       });
       this.popover.body.append(panel);
@@ -823,7 +830,7 @@ export class Picker {
     const cycle = this.hourCycle();
     const twelve = cycle === "h12" || cycle === "h11";
     return {
-      hour: twelve ? hour % 12 || 12 : hour,
+      hour: twelve ? (this.hourCycle() === "h11" ? hour % 12 : hour % 12 || 12) : hour,
       minute: Math.floor((time % 3600) / 60),
       second: time % 60,
       dayPeriod: hour >= 12 ? 1 : 0,
@@ -1016,10 +1023,7 @@ export class Picker {
   }
 
   private isLoaded(day: Day): boolean {
-    return [...this.loaded].some((key) => {
-      const [a, b] = key.split(":").map(Number);
-      return day >= a! && day <= b!;
-    });
+    return this.loaded.has(day);
   }
 
   private loadDays(first: Day, last: Day): void {
@@ -1027,12 +1031,25 @@ export class Picker {
     // A popover's days load when it opens.
     const inline = this.config.inline || this.kind === "calendar";
     if (!inline && !this.popover?.isOpen) return;
-    const key = `${first}:${last}`;
-    if (this.loaded.has(key) || [...this.pending.values()].some(([a, b]) => a === first && b === last)) return;
+    // Ask only for the days not asked for yet, in spans the server takes
+    // (Koyomi.Live answers at most 800 days at a time).
+    let start: Day | null = null;
+    for (let day = first; day <= last + 1; day++) {
+      const wanted = day <= last && !this.loaded.has(day);
+      if (wanted && start === null) start = day;
+      if (start !== null && (!wanted || day - start >= 366)) {
+        this.requestDays(start, day - 1);
+        start = wanted ? day : null;
+      }
+    }
+  }
+
+  private requestDays(first: Day, last: Day): void {
+    for (let day = first; day <= last; day++) this.loaded.add(day);
     const ref = `${this.id}-${++this.refs}`;
     this.pending.set(ref, [first, last]);
     this.calendar?.root.setAttribute("aria-busy", "true");
-    this.transport.push(
+    this.transport!.push(
       "koyomi:days",
       { id: this.id, from: formatISO(first), to: formatISO(last), ref, timeZone: this.config.timeZone ?? null },
       (reply) => {
@@ -1050,12 +1067,13 @@ export class Picker {
     this.pending.delete(ref);
     if (this.pending.size === 0) this.calendar?.root.removeAttribute("aria-busy");
     if (payload.error) {
+      // The days may be asked for again, when they are shown again.
+      for (let day = range[0]; day <= range[1]; day++) this.loaded.delete(day);
       this.loadError = true;
       this.showMessage(this.words.t("loadError"));
       return;
     }
     this.loadError = false;
-    this.loaded.add(`${range[0]}:${range[1]}`);
     for (let day = range[0]; day <= range[1]; day++) this.content.delete(day);
     const days = (payload.days ?? {}) as Record<string, DayContent>;
     for (const [iso, content] of Object.entries(days)) {
@@ -1068,6 +1086,9 @@ export class Picker {
 
   /** The LiveView says that the days changed: load the shown days again. */
   refreshDays(): void {
+    // A reply to a request made before the change is dropped.
+    this.pending.clear();
+    this.calendar?.root.removeAttribute("aria-busy");
     this.loaded.clear();
     this.content.clear();
     this.calendar?.setOptions({});
@@ -1142,7 +1163,8 @@ export class Picker {
           this.day = local.day;
           this.time = local.time;
           const later = localToInstant(local.day, local.time, this.config.timeZone, "later");
-          this.ambiguous = later.status === "ambiguous" && later.epochMs === epochMs ? "later" : (this.config.ambiguous ?? "earlier");
+          // The server's instant says which of a repeated hour it is.
+          if (later.status === "ambiguous") this.ambiguous = later.epochMs === epochMs ? "later" : "earlier";
         } else {
           this.day = parsed.day;
           this.time = parsed.time;
@@ -1349,7 +1371,7 @@ export class Picker {
       chips.append(el("span", { class: "koyomi-chips-empty" }, this.labelText ? "" : this.words.t("showCalendar")));
     }
     for (const day of sorted) {
-      const text = this.cal.format(day, "medium");
+      const text = this.cal.format(day, this.config.display);
       const remove = el("button", { type: "button", class: "koyomi-chip-remove", "aria-label": this.words.t("removeDate", { date: text }), disabled: this.config.disabled || this.config.readonly ? "" : null }, closeIcon());
       remove.addEventListener("click", (event) => {
         event.stopPropagation();
@@ -1405,7 +1427,8 @@ export class Picker {
   }
 
   private announce(text: string): void {
-    this.calendar?.announce(text);
+    this.live.textContent = "";
+    requestAnimationFrame(() => (this.live.textContent = text));
   }
 
   private lengthText(a: Day, b: Day): string {
@@ -1455,6 +1478,7 @@ export class Picker {
   destroy(): void {
     this.teardownUI();
     this.message.remove();
+    this.live.remove();
     this.root.classList.remove("koyomi-ready");
   }
 }

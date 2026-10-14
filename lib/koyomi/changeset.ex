@@ -182,7 +182,7 @@ defmodule Koyomi.Changeset do
   `DateTime` in UTC.
 
   The date and time picker with a `time_zone` posts an ISO 8601 string
-  with the offset of the zone (`"2027-03-15T14:30:00+00:00"`), which a
+  with the offset of the zone (`"2027-07-15T14:30:00+01:00"`), which a
   `:utc_datetime` field casts on its own. This function also reads a
   date and time without an offset (`"2027-03-15T14:30"`, as the browser's
   own input posts it when JavaScript is off) as a wall clock time in
@@ -220,15 +220,15 @@ defmodule Koyomi.Changeset do
   defp put_datetime(changeset, field, value, _time_zone, _opts) when value in [nil, ""],
     do: put_change(changeset, field, nil)
 
-  defp put_datetime(changeset, field, %DateTime{} = value, _time_zone, _opts),
-    do: put_change(changeset, field, DateTime.shift_zone!(value, "Etc/UTC"))
+  defp put_datetime(changeset, field, %DateTime{} = value, time_zone, _opts),
+    do: put_cast(changeset, field, value, time_zone)
 
   defp put_datetime(changeset, field, value, time_zone, opts) when is_binary(value) do
     value = String.trim(value)
 
     case DateTime.from_iso8601(value) do
       {:ok, instant, _offset} ->
-        put_cast(changeset, field, instant)
+        put_cast(changeset, field, instant, time_zone)
 
       {:error, :missing_offset} ->
         case NaiveDateTime.from_iso8601(value) do
@@ -250,12 +250,12 @@ defmodule Koyomi.Changeset do
   defp put_local(changeset, field, naive, time_zone, opts) do
     case DateTime.from_naive(naive, time_zone) do
       {:ok, instant} ->
-        put_cast(changeset, field, instant)
+        put_cast(changeset, field, instant, time_zone)
 
       {:ambiguous, first, second} ->
         case Keyword.get(opts, :ambiguous, :earlier) do
-          :earlier -> put_cast(changeset, field, first)
-          :later -> put_cast(changeset, field, second)
+          :earlier -> put_cast(changeset, field, first, time_zone)
+          :later -> put_cast(changeset, field, second, time_zone)
           :error -> add(changeset, field, {:ambiguous, time_zone: time_zone}, opts)
         end
 
@@ -267,14 +267,15 @@ defmodule Koyomi.Changeset do
     end
   end
 
-  # The field's own type decides: :utc_datetime truncates to the second,
+  # The field's own type decides: :utc_datetime keeps the instant in UTC,
   # :naive_datetime keeps the wall clock of the zone.
-  defp put_cast(changeset, field, %DateTime{} = instant) do
+  defp put_cast(changeset, field, %DateTime{} = instant, time_zone) do
     utc = DateTime.shift_zone!(instant, "Etc/UTC")
 
     case changeset.types[field] do
       type when type in [:naive_datetime, :naive_datetime_usec] ->
-        put_change(changeset, field, cast_type(type, DateTime.to_naive(instant)))
+        local = DateTime.shift_zone!(instant, time_zone)
+        put_change(changeset, field, cast_type(type, DateTime.to_naive(local)))
 
       type when type in [:utc_datetime, :utc_datetime_usec] ->
         put_change(changeset, field, cast_type(type, utc))

@@ -17,6 +17,8 @@ export interface PopoverOptions {
   inside: () => HTMLElement[];
   label: string;
   onClose: (reason: "escape" | "outside" | "api") => void;
+  /** Gives the focus back to the field, when the popover closed from inside. */
+  returnFocus: () => void;
   /** The element to focus when the popover opens. */
   initialFocus: () => HTMLElement | null;
 }
@@ -111,7 +113,7 @@ export class Popover {
     this.root.hidden = true;
     this.backdrop.hidden = true;
     this.options.onClose(reason);
-    if (hadFocus && reason !== "outside") this.options.anchor.querySelector<HTMLElement>("[tabindex='0'], button, input")?.focus();
+    if (hadFocus && reason !== "outside") this.options.returnFocus();
   }
 
   /** Places the popover below the anchor, or above it when it does not fit below. */

@@ -164,7 +164,8 @@ defmodule Koyomi.Components do
 
   With a `time_zone`, the person picks a wall clock time in that zone, and
   the picker posts it with the zone's offset at that moment
-  (`2027-03-15T14:30:00+00:00`), which a `:utc_datetime` field casts to
+  (`2027-03-15T14:30:00+01:00`, or `Z` when the offset is zero), which a
+  `:utc_datetime` field casts to
   UTC; a time that the zone skips or repeats on that day (when the clocks
   change) is shown and resolved before it is posted. Without a
   `time_zone`, it posts a date and time without an offset, for a
@@ -702,6 +703,15 @@ defmodule Koyomi.Components do
   defp year(%Date{year: year}, _default), do: year
 
   defp start(nil, _today), do: nil
+
+  # After a phx-change the field's value is the posted string.
+  defp start(text, today) when is_binary(text) do
+    case Date.from_iso8601(String.slice(text, 0, 10)) do
+      {:ok, date} -> start(date, today)
+      {:error, _reason} -> nil
+    end
+  end
+
   defp start(%Date{} = date, _today), do: Date.to_iso8601(date)
   defp start(%DateTime{} = value, _today), do: value |> DateTime.to_date() |> Date.to_iso8601()
 

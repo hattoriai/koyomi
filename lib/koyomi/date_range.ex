@@ -33,9 +33,8 @@ defmodule Koyomi.DateRange do
   @impl Ecto.Type
   def cast(nil), do: {:ok, nil}
 
-  def cast(%Date.Range{first: first, last: last, step: step}) when step in [1, -1] do
-    build(first, last)
-  end
+  def cast(%Date.Range{first: first, last: last, step: 1}), do: build(first, last)
+  def cast(%Date.Range{first: first, last: last, step: -1}), do: build(last, first)
 
   def cast({%Date{} = first, %Date{} = last}), do: build(first, last)
 

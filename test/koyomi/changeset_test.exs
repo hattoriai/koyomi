@@ -111,6 +111,26 @@ defmodule Koyomi.ChangesetTest do
              }
     end
 
+    test "a naive field keeps the zone's wall clock" do
+      changeset =
+        {%{}, %{at: :naive_datetime}}
+        |> cast(%{}, [])
+        |> Koyomi.Changeset.cast_datetime(%{"at" => "2027-07-15T13:30:00Z"}, :at, "Europe/Lisbon")
+
+      assert changeset.changes.at == ~N[2027-07-15 14:30:00]
+
+      changeset =
+        {%{}, %{at: :naive_datetime}}
+        |> cast(%{}, [])
+        |> Koyomi.Changeset.cast_datetime(
+          %{"at" => ~U[2027-07-15 13:30:00Z]},
+          :at,
+          "Europe/Lisbon"
+        )
+
+      assert changeset.changes.at == ~N[2027-07-15 14:30:00]
+    end
+
     test "empty and invalid" do
       assert Booking.changeset(%{"starts_at" => ""}).changes == %{}
 

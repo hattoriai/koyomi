@@ -47,7 +47,7 @@ defmodule Koyomi.Components.Shared do
       attr :calendar, :string,
         default: nil,
         doc:
-          "the calendar system of the display: `gregory` (the default), `japanese`, `buddhist`, `islamic-umalqura`, `hebrew`, `persian`, ... (see the Calendars guide)"
+          "the calendar system of the display: the locale's own (`-u-ca-`), else `gregory`; or `japanese`, `buddhist`, `islamic-umalqura`, `hebrew`, `persian`, ... (see the Calendars guide)"
 
       attr :time_zone, :string,
         default: nil,
