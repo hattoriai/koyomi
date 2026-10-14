@@ -9,6 +9,9 @@ defmodule Koyomi.Dates do
       # The schema
       field :days, Koyomi.Dates, default: []
 
+  SQLite has no arrays: `ecto_sqlite3` keeps the list in a text column as
+  a JSON array of ISO dates, which the type reads back the same.
+
   The picker posts the days as a list (`days[]`), with an empty first
   entry so that a form with no day selected still posts the field. The
   type drops the empty entries, removes repeated days and sorts the rest,
@@ -65,6 +68,14 @@ defmodule Koyomi.Dates do
 
   @impl Ecto.Type
   def load(nil), do: {:ok, []}
-  def load(list) when is_list(list), do: {:ok, Enum.sort(list, Date)}
+
+  # PostgreSQL gives dates; SQLite (a JSON array) gives ISO strings.
+  def load(list) when is_list(list) do
+    case cast(list) do
+      {:ok, dates} -> {:ok, dates}
+      :error -> :error
+    end
+  end
+
   def load(_other), do: :error
 end

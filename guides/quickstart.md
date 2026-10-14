@@ -23,8 +23,8 @@ end
 Then run `mix deps.get`.
 
 Koyomi needs Elixir 1.18 or later. The `Koyomi.DateRange` type of this
-guide stores a PostgreSQL `daterange`, so it needs `:postgrex`, which a
-Phoenix app with Ecto already has.
+guide stores a PostgreSQL `daterange` by default, which needs `:postgrex`;
+with SQLite or MySQL, give it `storage: :string` (see below).
 
 ## 2. Run the installer
 
@@ -159,8 +159,19 @@ defmodule MyApp.Bookings.Booking do
 end
 ```
 
-`Koyomi.DateRange` stores a `Date.Range` with both ends included.
-Without PostgreSQL, keep the two ends in two `:date` fields: see
+`Koyomi.DateRange` stores a `Date.Range` with both ends included. With
+SQLite or MySQL, store it in a text column, as an ISO 8601 interval
+(`"2027-03-01/2027-03-07"`):
+
+```elixir
+# The migration
+add :stay, :string
+
+# The schema
+field :stay, Koyomi.DateRange, storage: :string
+```
+
+Or keep the two ends in two `:date` fields, to query them as dates: see
 "Two fields for a range" in the [Rules](rules.md) guide.
 
 `:today` is read again on each check, so rules built once, in a module

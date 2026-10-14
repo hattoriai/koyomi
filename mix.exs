@@ -1,7 +1,7 @@
 defmodule Koyomi.MixProject do
   use Mix.Project
 
-  @version "0.1.0"
+  @version "0.1.1"
   @source_url "https://github.com/hattoriai/koyomi"
 
   def project do
@@ -47,6 +47,7 @@ defmodule Koyomi.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev], runtime: false},
       {:ecto, "~> 3.13"},
+      {:ecto_sqlite3, "~> 0.22", only: :test},
       {:esbuild, "~> 0.10", only: :dev, runtime: false},
       {:ex_doc, "~> 0.34", only: :dev, runtime: false},
       {:lazy_html, "~> 0.1", only: :test},

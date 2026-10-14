@@ -227,8 +227,10 @@ write dates in the picker's locale.
 
 ## Two fields for a range
 
-Without a `daterange` column, keep the two ends in two `:date` fields, and
-give the picker `from` and `to` instead of `field`:
+To query the ends as dates in a database without range columns (SQLite,
+MySQL), keep them in two `:date` fields, and give the picker `from` and
+`to` instead of `field`. (`Koyomi.DateRange` with `storage: :string` or
+`storage: :map` also stores a range there, but as text.)
 
 ```heex
 <.date_range_picker from={@form[:check_in]} to={@form[:check_out]} label_id="stay-label" rules={@stay_rules} />
