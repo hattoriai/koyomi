@@ -95,6 +95,8 @@ defmodule Koyomi.MixProject do
       main: "readme",
       source_ref: "v#{@version}",
       source_url: @source_url,
+      # The banner of the README, at the same relative path in the docs.
+      assets: %{"media" => "media"},
       extras: [
         "README.md",
         "guides/quickstart.md",
