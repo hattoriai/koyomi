@@ -7,6 +7,15 @@ and Koyomi follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-17
+
+### Added
+
+- Phoenix 1.7 and LiveView 1.1 are supported: Koyomi needs Phoenix
+  1.7.14 or 1.8 (it needed 1.8) and LiveView 1.1 or later (it needed
+  1.2). Koyomi needed no change of code for them. CI tests the oldest
+  versions.
+
 ## [0.1.2] - 2026-10-14
 
 ### Added

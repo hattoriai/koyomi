@@ -6,8 +6,8 @@ which runs no JavaScript: `pick/3` picks a value as the picker would post
 it, and `request_days/4` asks a LiveView for its day content.
 
 The helpers read the rendered HTML with LazyHTML, which
-`Phoenix.LiveViewTest` uses too. A Phoenix 1.8 app has it in its test
-dependencies.
+`Phoenix.LiveViewTest` uses too from LiveView 1.1, so an app on LiveView
+1.1 or later has it in its test dependencies.
 
 ## Picking a value
 

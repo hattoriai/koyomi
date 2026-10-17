@@ -1,6 +1,7 @@
 # Quickstart
 
-This guide adds date pickers to a Phoenix 1.8 app with LiveView 1.2. At
+This guide adds date pickers to a Phoenix 1.8 app with LiveView 1.2 (a
+Phoenix 1.7 app with LiveView 1.1 works the same way). At
 the end, a LiveView form has a date picker and a range picker, the schema
 stores a date and a range of days, and the changeset checks the same
 rules as the pickers.
@@ -15,7 +16,7 @@ In `mix.exs`:
 ```elixir
 def deps do
   [
-    {:koyomi, "~> 0.1"}
+    {:koyomi, "~> 0.2"}
   ]
 end
 ```

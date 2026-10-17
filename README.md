@@ -62,14 +62,14 @@ README has the details) to try every picker in your browser.
 ## Install
 
 Koyomi needs Elixir 1.18 or later (it uses the built-in `JSON` module),
-Phoenix 1.8 and Phoenix LiveView 1.2.
+Phoenix 1.7.14 or 1.8, and Phoenix LiveView 1.1 or later.
 
 Add `koyomi` to the deps in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:koyomi, "~> 0.1"}
+    {:koyomi, "~> 0.2"}
   ]
 end
 ```
