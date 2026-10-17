@@ -28,6 +28,19 @@ defmodule Koyomi.Presets do
   The browser labels the built-in presets in the picker's locale
   (`Intl.RelativeTimeFormat` and `Koyomi.Messages`): "Today", "Next week",
   "In 30 days", "Hoje", "La semaine prochaine".
+
+  ## Keys, and presets that stay relative
+
+  Each preset has a key: a built-in preset's own (`"today"`,
+  `"last_7_days"`, `"this_month"`, `"in_1_week"`, `"month_to_date"`, see
+  `key/1`), or the one an entry of a keyword list gives it:
+
+      presets={[recent: {:last, 7, :days}, mtd: :month_to_date, :this_year]}
+
+  A picker with `relative` posts the key of the preset a person chose,
+  instead of today's dates (see the [Filters and URLs](filters.md)
+  guide), and shows a key it is given as that preset. `to_date/2` and
+  `to_range/2` turn a key back into the dates it covers on a day.
   """
 
   @type unit :: :day | :week | :month | :quarter | :year
@@ -36,6 +49,20 @@ defmodule Koyomi.Presets do
           | {:in | :ago, pos_integer(), atom()}
           | {:last | :next, pos_integer(), :days}
           | {String.t(), Date.t() | Date.Range.t() | (Date.t() -> Date.t() | Date.Range.t())}
+
+  @typedoc "A preset of a picker's `presets`: a preset, or a key and a preset."
+  @type entry :: preset() | {atom(), preset()}
+
+  @units %{
+    day: "day",
+    days: "day",
+    week: "week",
+    weeks: "week",
+    month: "month",
+    months: "month",
+    year: "year",
+    years: "year"
+  }
 
   @periods %{
     this_week: {:week, 0},
@@ -55,7 +82,7 @@ defmodule Koyomi.Presets do
   `:datetime`) and today, into the list that the browser reads: maps with
   `"value"` (an ISO date, or `%{"from", "to"}` for a range), and
   `"label"` (the app's) or `"relative"` / `"message"` (for the browser to
-  label).
+  label), and `"key"`, the preset's key.
 
   `first_day` is the first day of the week (ISO, 1 is Monday), for the
   week presets.
@@ -63,7 +90,7 @@ defmodule Koyomi.Presets do
   ## Examples
 
       iex> Koyomi.Presets.resolve([:tomorrow], :date, ~D[2027-03-15])
-      [%{"id" => "tomorrow", "value" => "2027-03-16", "relative" => %{"n" => 1, "unit" => "day"}}]
+      [%{"id" => "tomorrow", "key" => "tomorrow", "value" => "2027-03-16", "relative" => %{"n" => 1, "unit" => "day"}}]
 
       iex> [preset] = Koyomi.Presets.resolve([{:last, 7, :days}], :range, ~D[2027-03-15])
       iex> preset["value"]
@@ -77,9 +104,183 @@ defmodule Koyomi.Presets do
   def resolve(presets, kind, %Date{} = today, first_day) when is_list(presets) do
     presets
     |> Enum.with_index()
-    |> Enum.map(fn {preset, index} -> one(preset, today, first_day, index) end)
+    |> Enum.map(fn {entry, index} ->
+      {key, preset} = split(entry)
+      preset |> one(today, first_day, index) |> put_key(key || key(preset))
+    end)
     |> Enum.map(&fit(&1, kind))
     |> Enum.reject(&is_nil/1)
+  end
+
+  # A keyword entry names its preset; the app's own presets ({label, value})
+  # have a binary first element, the built-in ones no 2-tuple with an atom.
+  defp split({key, preset}) when is_atom(key) and not is_nil(key) and not is_boolean(key),
+    do: {Atom.to_string(key), preset}
+
+  defp split(preset), do: {nil, preset}
+
+  defp put_key(map, nil), do: map
+  defp put_key(map, key), do: Map.put(map, "key", key)
+
+  @doc """
+  The key of a built-in preset, or `nil` for an app's own `{label, value}`
+  (which a keyword list names).
+
+  ## Examples
+
+      iex> Koyomi.Presets.key({:last, 7, :days})
+      "last_7_days"
+
+      iex> Koyomi.Presets.key({:in, 2, :weeks})
+      "in_2_week"
+
+      iex> Koyomi.Presets.key(:this_quarter)
+      "this_quarter"
+
+  """
+  @spec key(preset()) :: String.t() | nil
+  def key(preset) when preset in [:today, :tomorrow, :yesterday, :month_to_date, :year_to_date],
+    do: Atom.to_string(preset)
+
+  def key(preset) when is_map_key(@periods, preset), do: Atom.to_string(preset)
+
+  def key({direction, n, unit}) when direction in [:in, :ago] and is_integer(n) and n > 0,
+    do: "#{direction}_#{n}_#{unit(unit)}"
+
+  def key({direction, n, :days}) when direction in [:last, :next] and is_integer(n) and n > 0,
+    do: "#{direction}_#{n}_days"
+
+  def key(_preset), do: nil
+
+  @doc """
+  The preset of a built-in key (`"last_7_days"`, `"this_month"`,
+  `"in_1_week"`), or `:error`. Hyphens work as underscores, and the units
+  as their plurals.
+
+  ## Examples
+
+      iex> Koyomi.Presets.parse("last_30_days")
+      {:ok, {:last, 30, :days}}
+
+      iex> Koyomi.Presets.parse("next-week")
+      {:ok, :next_week}
+
+      iex> Koyomi.Presets.parse("soon")
+      :error
+
+  """
+  @spec parse(String.t() | atom()) :: {:ok, preset()} | :error
+  def parse(key) when is_atom(key) and not is_nil(key), do: parse(Atom.to_string(key))
+
+  def parse(key) when is_binary(key) do
+    key = key |> String.trim() |> String.downcase() |> String.replace("-", "_")
+
+    case String.split(key, "_") do
+      [direction, n, unit] when direction in ["in", "ago"] ->
+        with {:ok, n} <- count(n),
+             {:ok, unit} <- unit_atom(unit),
+             do: {:ok, {direction(direction), n, unit}}
+
+      [direction, n, days] when direction in ["last", "next"] and days in ["day", "days"] ->
+        with {:ok, n} <- count(n), do: {:ok, {direction(direction), n, :days}}
+
+      _other ->
+        named(key)
+    end
+  end
+
+  def parse(_key), do: :error
+
+  @named Enum.map(
+           [:today, :tomorrow, :yesterday, :month_to_date, :year_to_date] ++ Map.keys(@periods),
+           &{Atom.to_string(&1), &1}
+         )
+         |> Map.new()
+
+  defp named(key) do
+    case Map.fetch(@named, key) do
+      {:ok, preset} -> {:ok, preset}
+      :error -> :error
+    end
+  end
+
+  defp direction("in"), do: :in
+  defp direction("ago"), do: :ago
+  defp direction("last"), do: :last
+  defp direction("next"), do: :next
+
+  defp count(text) do
+    case Integer.parse(text) do
+      {n, ""} when n > 0 -> {:ok, n}
+      _other -> :error
+    end
+  end
+
+  defp unit_atom(text) do
+    case Enum.find(@units, fn {atom, _unit} -> Atom.to_string(atom) == text end) do
+      {atom, _unit} -> {:ok, atom}
+      nil -> :error
+    end
+  end
+
+  @doc """
+  The day of a preset, or of its key, on `today`: a range preset gives its
+  first day, as in a date picker. `:error` for a key that is not a
+  built-in one.
+
+  Options: `:today` (the day the preset counts from; today in UTC by
+  default), and `:first_day` (the first day of the week, ISO, for the week
+  presets; Monday by default). Give a picker's `time_zone` as `:today`'s
+  day there: `Koyomi.Rules.today/1` does it.
+
+  ## Examples
+
+      iex> Koyomi.Presets.to_date("yesterday", today: ~D[2027-03-15])
+      {:ok, ~D[2027-03-14]}
+
+      iex> Koyomi.Presets.to_date(:this_month, today: ~D[2027-03-15])
+      {:ok, ~D[2027-03-01]}
+
+  """
+  @spec to_date(preset() | String.t(), keyword()) :: {:ok, Date.t()} | :error
+  def to_date(preset_or_key, opts \\ []) do
+    with {:ok, %{"value" => value}} <- value(preset_or_key, :date, opts),
+         do: {:ok, Date.from_iso8601!(value)}
+  end
+
+  @doc """
+  The range of a preset, or of its key, on `today`: a day preset gives a
+  range of one day, as in a range picker. Options as in `to_date/2`.
+
+  ## Examples
+
+      iex> Koyomi.Presets.to_range("last_7_days", today: ~D[2027-03-15])
+      {:ok, Date.range(~D[2027-03-09], ~D[2027-03-15])}
+
+      iex> Koyomi.Presets.to_range(:last_week, today: ~D[2027-03-15], first_day: 7)
+      {:ok, Date.range(~D[2027-03-07], ~D[2027-03-13])}
+
+  """
+  @spec to_range(preset() | String.t(), keyword()) :: {:ok, Date.Range.t()} | :error
+  def to_range(preset_or_key, opts \\ []) do
+    with {:ok, %{"value" => %{"from" => from, "to" => to}}} <- value(preset_or_key, :range, opts),
+         do: {:ok, Date.range(Date.from_iso8601!(from), Date.from_iso8601!(to))}
+  end
+
+  defp value(key, kind, opts) when is_binary(key) do
+    with {:ok, preset} <- parse(key), do: value(preset, kind, opts)
+  end
+
+  defp value(preset, kind, opts) do
+    today = Keyword.get_lazy(opts, :today, &Date.utc_today/0)
+    first_day = Keyword.get(opts, :first_day, 1)
+
+    case resolve([preset], kind, today, first_day) do
+      [resolved] -> {:ok, resolved}
+      _other -> :error
+    end
+  rescue
+    ArgumentError -> :error
   end
 
   defp one(:today, today, _first_day, _index),
@@ -166,17 +367,6 @@ defmodule Koyomi.Presets do
 
   defp fit(preset, kind) when kind in [:date, :dates, :datetime, :range], do: preset
   defp fit(_preset, _kind), do: nil
-
-  @units %{
-    day: "day",
-    days: "day",
-    week: "week",
-    weeks: "week",
-    month: "month",
-    months: "month",
-    year: "year",
-    years: "year"
-  }
 
   defp unit(unit) do
     Map.get(@units, unit) ||

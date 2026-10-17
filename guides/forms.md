@@ -129,6 +129,9 @@ inputs as plain text boxes.
 
 ## A picker outside a form
 
+For a filter bar, a search page or params in a URL, see
+[Filters and URLs](filters.md).
+
 A `calendar/1` with `select`, or any picker with `on_change`, pushes an
 event on each change:
 

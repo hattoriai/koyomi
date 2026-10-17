@@ -29,10 +29,13 @@ defmodule Koyomi.DateRange do
   `Koyomi.Components.date_range_picker/1`, and can be queried as dates.
 
   The range picker posts the range as a map, `%{"from" => "2027-03-01",
-  "to" => "2027-03-07"}`; the type also casts a `Date.Range`, a
-  `{first, last}` tuple and an ISO 8601 interval
-  (`"2027-03-01/2027-03-07"`). Both ends empty cast to `nil`. A range
-  with one end, or with an end before its start, is invalid.
+  "to" => "2027-03-07"}`; the type also casts a map with `"start"` and
+  `"end"`, a `Date.Range`, a `{first, last}` tuple, an ISO 8601 interval
+  (`"2027-03-01/2027-03-07"`), and the key of a built-in preset
+  (`"last_7_days"`, which a relative picker posts), as the days it covers
+  today in UTC (see `Koyomi.Presets.to_range/2` to count from another day).
+  Both ends empty cast to `nil`. A range with one end, or with an end
+  before its start, is invalid.
 
   PostgreSQL keeps a `daterange` in its canonical form, `[first, last + 1)`;
   the type writes that form and reads any form back as a `Date.Range`. A
@@ -125,8 +128,8 @@ defmodule Koyomi.DateRange do
   def cast({%Date{} = first, %Date{} = last}), do: build(first, last)
 
   def cast(%{} = map) when not is_struct(map) do
-    from = Map.get(map, "from", Map.get(map, :from))
-    to = Map.get(map, "to", Map.get(map, :to))
+    from = first_of(map, ["from", :from, "start", :start])
+    to = first_of(map, ["to", :to, "end", :end])
 
     case {blank?(from), blank?(to)} do
       {true, true} -> {:ok, nil}
@@ -139,6 +142,7 @@ defmodule Koyomi.DateRange do
     case String.split(String.trim(text), "/") do
       [""] -> {:ok, nil}
       [from, to] -> cast(%{"from" => from, "to" => to})
+      [key] -> preset(key)
       _other -> :error
     end
   end
@@ -146,6 +150,15 @@ defmodule Koyomi.DateRange do
   def cast(_other), do: :error
 
   defp blank?(value), do: value in [nil, ""]
+
+  defp first_of(map, keys), do: Enum.find_value(keys, &Map.get(map, &1))
+
+  defp preset(key) do
+    case Koyomi.Presets.to_range(key) do
+      {:ok, range} -> {:ok, range}
+      :error -> :error
+    end
+  end
 
   defp date(%Date{} = date), do: {:ok, date}
 

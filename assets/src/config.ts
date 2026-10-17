@@ -23,6 +23,8 @@ export interface ClientRules {
 
 export interface Preset {
   id: string;
+  /** What a relative picker posts for it (Koyomi.Presets.key/1, or the app's own). */
+  key?: string;
   value: string | { from: string; to: string };
   label?: string;
   relative?: { n: number; unit: Intl.RelativeTimeFormatUnit };
@@ -63,6 +65,8 @@ export interface Config {
   hourCycle?: "h12" | "h23";
   ambiguous?: "earlier" | "later";
   nights?: boolean;
+  /** A chosen preset posts its key, and a key as the value shows it. */
+  relative?: boolean;
   select?: "date" | "range" | "dates";
   start?: string;
 }

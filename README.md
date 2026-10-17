@@ -54,6 +54,7 @@ README has the details) to try every picker in your browser.
 | Time zones | today in a zone, wall clock times posted with the zone's offset, the hour the clocks skip or repeat shown and resolved |
 | Day content | labels, tones, marks, descriptions, disabled days and time slots from the LiveView, in sync or async, refreshed on demand |
 | Forms | the forms of the browser's own inputs (`2027-03-15`, `2027-W11`), the browser's own input before the hook mounts, `phx-change` and `used_input?`, pages without LiveView |
+| Filters | plain params and URLs as well as Ecto forms: a range's keys of your own (`start` and `end`), and relative values, where a chosen preset posts its key (`last_7_days`) and stays relative in a shared link |
 | Types | `Koyomi.DateRange`, `Koyomi.DateTimeRange`, `Koyomi.Dates`, `Koyomi.Month`, `Koyomi.Week`, `Koyomi.Recurrence` |
 | Repeat | daily, weekly, monthly and yearly rules (RFC 5545), said in words in eight languages, with the next dates |
 | Theming | CSS custom properties, the Sumi theme, dark mode, forced colours, reduced motion |
@@ -172,6 +173,8 @@ type of the field casts it.
   attributes.
 * [Forms](guides/forms.md): what the pickers post, errors, pages without
   LiveView, values set by the server.
+* [Filters and URLs](guides/filters.md): plain params, a range's own keys,
+  and relative values that stay relative in a URL.
 * [Rules](guides/rules.md): `Koyomi.Rules` and `Koyomi.Changeset`.
 * [Typing](guides/typing.md): the segments, and dates typed in words.
 * [Calendars and locales](guides/calendars.md): locales, calendar systems,

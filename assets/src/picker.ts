@@ -87,6 +87,8 @@ export class Picker {
   private days = new Set<Day>();
   private year: number | null = null;
   private rrule: string | null = null;
+  /** The key of the chosen preset, in a relative picker: the value posts it. */
+  private preset: string | null = null;
   /** Which of the two instants a repeated wall clock time is. */
   private ambiguous: "earlier" | "later" = "earlier";
   private built = false;
@@ -97,6 +99,8 @@ export class Picker {
   private toSegments: Segments | null = null;
   private timeSegments: Segments | null = null;
   private chips: HTMLElement | null = null;
+  /** In a relative picker, the chosen preset, in place of the segments. */
+  private relativeButton: HTMLButtonElement | null = null;
   private trigger: HTMLButtonElement | null = null;
   private clearButton: HTMLButtonElement | null = null;
   private zoneLabel: HTMLElement | null = null;
@@ -181,6 +185,7 @@ export class Picker {
     this.calendar = null;
     this.control = this.panel = null;
     this.segments = this.toSegments = this.timeSegments = null;
+    this.relativeButton = null;
     this.timeList = null;
     this.typeBox = null;
     this.recurrence = null;
@@ -242,6 +247,26 @@ export class Picker {
     } else {
       this.segments = this.dateSegments("value");
       control.append(this.segments.root);
+    }
+
+    if (this.isRelative) {
+      // The chosen preset stands in the field for its days: a click opens
+      // the calendar, Backspace clears it, and a letter starts typing words.
+      const button = el("button", { type: "button", class: "koyomi-relative", disabled: config.disabled ? "" : null });
+      button.addEventListener("click", () => this.toggle());
+      button.addEventListener("keydown", (event) => {
+        if (config.readonly) return;
+        if (event.key === "Backspace" || event.key === "Delete") {
+          event.preventDefault();
+          this.clear();
+          this.focus();
+        } else if (event.key.length === 1 && !event.metaKey && !event.ctrlKey && !event.altKey && event.key !== " ") {
+          event.preventDefault();
+          this.openTyping(event.key);
+        }
+      });
+      this.relativeButton = button;
+      control.prepend(button);
     }
 
     const icon = kind === "time" ? clockIcon() : kind === "recurrence" ? repeatIcon() : calendarIcon();
@@ -507,6 +532,7 @@ export class Picker {
     const list = el("div", { class: "koyomi-presets" });
     for (const preset of presets) {
       const button = el("button", { type: "button", class: "koyomi-preset", "data-preset": preset.id }, this.presetLabel(preset));
+      if (this.isRelative && preset.key) button.setAttribute("aria-pressed", String(preset.key === this.preset));
       const value = preset.value;
       const disabled = typeof value === "string" ? !this.rules.allowed(parseISO(value)!) : this.rules.checkRange(parseISO(value.from)!, parseISO(value.to)!) !== null;
       if (disabled) button.setAttribute("aria-disabled", "true");
@@ -580,7 +606,8 @@ export class Picker {
   }
 
   focus(): void {
-    if (this.segments) this.segments.focus("first");
+    if (this.preset !== null && this.relativeButton) this.relativeButton.focus();
+    else if (this.segments) this.segments.focus("first");
     else if (this.timeSegments) this.timeSegments.focus("first");
     else if (this.trigger) this.trigger.focus();
     else this.calendar?.focus();
@@ -651,6 +678,7 @@ export class Picker {
     const from = Math.min(this.draft, day);
     const to = Math.max(this.draft, day);
     this.draft = null;
+    this.preset = null;
     this.from = from;
     this.to = to;
     this.commit();
@@ -720,6 +748,13 @@ export class Picker {
   }
 
   private applyPreset(preset: Preset): void {
+    if (this.isRelative && preset.key) {
+      this.setPreset(preset);
+      this.commit();
+      this.announce(this.relativeText(preset));
+      this.close();
+      return;
+    }
     const value = preset.value;
     if (typeof value === "string") {
       const day = parseISO(value);
@@ -741,10 +776,57 @@ export class Picker {
 
   private setDay(day: Day | null, commit: boolean): void {
     this.day = day;
+    this.preset = null;
     if (commit) this.commit();
   }
 
+  // Relative values.
+
+  private get isRelative(): boolean {
+    return this.config.relative === true && (this.kind === "date" || this.kind === "range");
+  }
+
+  private presetByKey(key: string): Preset | undefined {
+    return this.config.presets?.find((preset) => preset.key === key);
+  }
+
+  /** Chooses a preset: its key is the value, and its days (today's) are shown. */
+  private setPreset(preset: Preset): void {
+    const value = preset.value;
+    this.draft = null;
+    if (typeof value === "string") {
+      this.day = parseISO(value);
+    } else {
+      this.from = parseISO(value.from);
+      this.to = parseISO(value.to);
+    }
+    this.preset = preset.key ?? null;
+  }
+
+  /** "Last 7 days, 10–16 Oct": the preset, and the days it covers today. */
+  private relativeText(preset: Preset): string {
+    const value = preset.value;
+    const days =
+      typeof value === "string"
+        ? this.cal.format(parseISO(value)!, this.config.display)
+        : this.cal.formatRange(parseISO(value.from)!, parseISO(value.to)!, this.config.display);
+    return `${this.presetLabel(preset)}, ${days}`;
+  }
+
+  /** A typed date or range that a preset gives today: the preset. */
+  private presetFor(result: ParseResult): Preset | undefined {
+    if (!this.isRelative) return undefined;
+    return this.config.presets?.find((preset) => {
+      if (!preset.key) return false;
+      const value = preset.value;
+      if (typeof value === "string") return result.kind === "date" && parseISO(value) === result.day;
+      if (result.kind === "range") return parseISO(value.from) === result.from && parseISO(value.to) === result.to;
+      return result.kind === "date" && this.kind === "range" && parseISO(value.from) === result.day && parseISO(value.to) === result.day;
+    });
+  }
+
   clear(): void {
+    this.preset = null;
     this.day = this.time = this.from = this.to = this.draft = this.year = null;
     this.days.clear();
     this.rrule = null;
@@ -755,6 +837,7 @@ export class Picker {
   // The segments.
 
   private onSegments(part: "value" | "from" | "to"): void {
+    this.preset = null;
     const segments = part === "to" ? this.toSegments! : this.segments!;
     const values = segments.values;
     const day = this.dayFromValues(values);
@@ -910,6 +993,12 @@ export class Picker {
   }
 
   private applyResult(result: ParseResult): void {
+    const preset = this.presetFor(result);
+    if (preset) {
+      this.applyPreset(preset);
+      return;
+    }
+    this.preset = null;
     switch (result.kind) {
       case "date":
         if (this.kind === "range") {
@@ -1132,6 +1221,12 @@ export class Picker {
   /** Sets the value from its wire form, without posting it. */
   setWire(wire: Wire): void {
     this.draft = null;
+    this.preset = null;
+    const preset = this.isRelative && typeof wire === "string" ? this.presetByKey(wire) : undefined;
+    if (preset) {
+      this.setPreset(preset);
+      return;
+    }
     switch (this.kind) {
       case "date":
         this.day = typeof wire === "string" ? parseISO(wire) : null;
@@ -1192,6 +1287,7 @@ export class Picker {
 
   /** The value in its wire form. */
   wire(): Wire {
+    if (this.preset !== null && this.isRelative) return this.preset;
     switch (this.kind) {
       case "date":
         return this.day === null ? null : formatISO(this.day);
@@ -1250,7 +1346,24 @@ export class Picker {
       }
     };
 
-    if (this.kind === "range" || (this.kind === "calendar" && this.config.select === "range" && this.input("from"))) {
+    // A relative picker posts the chosen preset's key under the field's
+    // name, or its days: only one of the two is enabled.
+    const presetInput = this.isRelative ? this.input("preset") : null;
+    if (presetInput) {
+      const relative = this.preset !== null;
+      const others = this.nativeInputs().filter((input) => input !== presetInput);
+      if (presetInput.disabled === relative) changed.push(relative ? presetInput : others[others.length - 1]!);
+      presetInput.disabled = !relative || this.config.disabled === true;
+      for (const input of others) input.disabled = relative || this.config.disabled === true;
+      if (relative) {
+        set(presetInput, this.preset!);
+        for (const input of others) input.value = "";
+      }
+    }
+
+    if (presetInput && this.preset !== null) {
+      // The key is posted; the days stay empty.
+    } else if (this.kind === "range" || (this.kind === "calendar" && this.config.select === "range" && this.input("from"))) {
       const range = wire as { from: string | null; to: string | null };
       // Only whole ranges, or none, reach the form.
       if ((range.from === null) !== (range.to === null)) return;
@@ -1315,6 +1428,7 @@ export class Picker {
     if (kind === "dates" && this.chips) this.drawChips();
     if (kind === "recurrence" && this.chips) this.chips.textContent = this.recurrence?.summary() ?? this.words.t("doesNotRepeat");
     if (this.clearButton) this.clearButton.hidden = !this.hasValue();
+    if (this.isRelative) this.drawRelative();
 
     if (this.calendar) this.calendar.setSelection(this.selection());
     if (this.timeList) {
@@ -1346,7 +1460,32 @@ export class Picker {
     }
   }
 
+  private drawRelative(): void {
+    const preset = this.preset === null ? undefined : this.presetByKey(this.preset);
+    this.control?.classList.toggle("koyomi-relative-active", preset !== undefined);
+    if (this.relativeButton) {
+      this.relativeButton.hidden = preset === undefined;
+      if (preset) {
+        const value = preset.value;
+        const days =
+          typeof value === "string"
+            ? this.cal.format(parseISO(value)!, this.config.display)
+            : this.cal.formatRange(parseISO(value.from)!, parseISO(value.to)!, this.config.display);
+        this.relativeButton.replaceChildren(
+          el("span", { class: "koyomi-relative-name" }, this.presetLabel(preset)),
+          el("span", { class: "koyomi-relative-days" }, days),
+        );
+        this.relativeButton.setAttribute("aria-label", `${this.labelText ? this.labelText + ": " : ""}${this.relativeText(preset)}`);
+      }
+    }
+    for (const button of this.panel?.querySelectorAll<HTMLElement>(".koyomi-preset[aria-pressed]") ?? []) {
+      const preset = this.config.presets?.find((candidate) => candidate.id === button.dataset.preset);
+      button.setAttribute("aria-pressed", String(preset?.key !== undefined && preset.key === this.preset));
+    }
+  }
+
   private hasValue(): boolean {
+    if (this.preset !== null) return true;
     switch (this.kind) {
       case "range":
         return this.from !== null || this.to !== null;

@@ -87,8 +87,11 @@ test.describe("the date picker", () => {
 
   test("a preset, and the clear button", async ({ page }) => {
     const popover = await openPopover(page, "event_due_picker");
-    await popover.getByRole("button", { name: "Tomorrow" }).click();
-    await expectPosted(page, "due", addDays(await today(page), 1));
+    // The page's rules disable Sundays: on a Saturday, "Tomorrow" is one.
+    const tomorrow = popover.getByRole("button", { name: "Tomorrow" });
+    const sunday = (await tomorrow.getAttribute("aria-disabled")) === "true";
+    await (sunday ? popover.locator('[data-preset="in-1-week"]') : tomorrow).click();
+    await expectPosted(page, "due", addDays(await today(page), sunday ? 7 : 1));
     await picker(page, "event_due_picker").locator(".koyomi-clear").click();
     await expectPosted(page, "due", "");
   });

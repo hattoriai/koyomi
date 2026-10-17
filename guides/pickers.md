@@ -52,6 +52,8 @@ Its own attributes:
 | Attribute | Default | Use |
 |---|---|---|
 | `from`, `to` | `nil` | two `:date` fields instead of `field`; the picker posts each one with its own name |
+| `keys` | `{"from", "to"}` | the keys of the two days in the posted map and in the value, such as `{"start", "end"}` (see [Filters and URLs](filters.md)) |
+| `relative` | `false` | a chosen preset posts its key (`last_7_days`) instead of its days (see [Filters and URLs](filters.md)); the date picker has it too |
 | `nights` | `false` | count nights (days minus one) in the text of the range, as for a stay |
 
 The rules `:min_days`, `:max_days` and `:allow_disabled_in_range` apply

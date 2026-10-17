@@ -17,6 +17,7 @@ defmodule KoyomiTest.Router do
   scope "/" do
     pipe_through(:browser)
     live("/booking", KoyomiTest.BookingLive)
+    live("/filters", KoyomiTest.FiltersLive)
   end
 end
 
