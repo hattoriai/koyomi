@@ -45,7 +45,9 @@ defmodule Koyomi.Test do
   `value` is what the picker would post: a `Date`, a `Date.Range` (or
   `{first, last}`), a list of `Date`, a `Time`, a `DateTime` (posted with
   its offset), a `NaiveDateTime`, a `Koyomi.Recurrence`, an ISO string,
-  or `nil` to clear it.
+  or `nil` to clear it. In a `relative` picker, the key of a preset
+  (`"last_7_days"` or `:last_7_days`) picks that preset, as a click on it
+  does.
   """
   @spec pick(struct(), String.t(), term()) :: String.t()
   def pick(view, picker_id, value) when is_binary(picker_id) do
@@ -68,14 +70,19 @@ defmodule Koyomi.Test do
       |> Enum.reject(&(LazyHTML.attribute(&1, "id") == [picker_id]))
       |> Enum.flat_map(fn other ->
         case {input_names(other), LazyHTML.attribute(other, "data-value")} do
-          {[], _value} -> []
-          {other_names, [json]} -> pairs(JSON.decode!(json), other_names)
-          _other -> []
+          {[], _value} ->
+            []
+
+          {other_names, [json]} ->
+            pairs(preset_or_encode(JSON.decode!(json), other_names), other_names)
+
+          _other ->
+            []
         end
       end)
 
     params =
-      (others ++ pairs(Wire.encode(value), names))
+      (others ++ pairs(preset_or_encode(value, names), names))
       |> URI.encode_query()
       |> Query.decode()
 
@@ -109,6 +116,20 @@ defmodule Koyomi.Test do
        LazyHTML.attribute(input, "name") |> List.first()}
     end)
   end
+
+  # A key, in a relative picker (one with a preset input).
+  defp preset_or_encode(value, names) when is_atom(value) and value not in [nil, true, false],
+    do: preset_or_encode(Atom.to_string(value), names)
+
+  defp preset_or_encode(value, names) when is_binary(value) do
+    if List.keymember?(names, "preset", 0) and not String.match?(value, ~r/^\d/),
+      do: {:preset, value},
+      else: Wire.encode(value)
+  end
+
+  defp preset_or_encode(value, _names), do: Wire.encode(value)
+
+  defp pairs({:preset, key}, names), do: [{name_of(names, "preset"), key}]
 
   defp pairs(%{"from" => from, "to" => to}, names) do
     [{name_of(names, "from"), from || ""}, {name_of(names, "to"), to || ""}]

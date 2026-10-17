@@ -212,7 +212,7 @@ defmodule KoyomiDev.Layouts do
       <body class={@sumi && "sumi"} data-theme={@conn.params["dark"] && "dark"}>
         <main>
           <nav>
-            <a href="/">Pickers</a><a href="/days">Day content</a><a href="/calendars">Calendars</a><a href="/plain">Without LiveView</a><a href="/?theme=sumi">Sumi theme</a>
+            <a href="/">Pickers</a><a href="/days">Day content</a><a href="/calendars">Calendars</a><a href="/filters">Filters</a><a href="/plain">Without LiveView</a><a href="/?theme=sumi">Sumi theme</a>
           </nav>
           {@inner_content}
         </main>
@@ -465,6 +465,102 @@ defmodule KoyomiDev.CalendarsLive do
   end
 end
 
+defmodule KoyomiDev.FiltersLive do
+  @moduledoc """
+  A filter bar with plain params, as in a dashboard or a search page: a
+  relative day and a relative range, with keys of its own, kept in the URL.
+  """
+  use Phoenix.LiveView
+
+  import Koyomi.Components
+
+  alias Plug.Conn.Query
+
+  @presets [
+    :today,
+    :yesterday,
+    {:last, 7, :days},
+    {:last, 30, :days},
+    :this_month,
+    :last_month,
+    :this_quarter,
+    :this_year
+  ]
+
+  @impl true
+  def mount(_params, _session, socket), do: {:ok, assign(socket, presets: @presets)}
+
+  @impl true
+  def handle_params(params, _uri, socket) do
+    filter = Map.get(params, "filter", %{"day" => "today", "period" => "last_7_days"})
+    {:noreply, assign(socket, filter: filter, ranges: ranges(filter))}
+  end
+
+  @impl true
+  def render(assigns) do
+    ~H"""
+    <h1>Filters</h1>
+    <form id="filters-form" phx-change="filter">
+      <div class="columns">
+        <div>
+          <label class="label" id="day-label">Day</label>
+          <.date_picker name="filter[day]" value={@filter["day"]} label_id="day-label" relative presets={@presets} />
+
+          <label class="label" id="period-label">Period</label>
+          <.date_range_picker
+            name="filter[period]"
+            value={@filter["period"]}
+            label_id="period-label"
+            keys={{"start", "end"}}
+            relative
+            months={2}
+            presets={@presets}
+          />
+        </div>
+        <dl>
+          <dt>Today's days</dt>
+          <dd id="ranges">{@ranges}</dd>
+        </dl>
+      </div>
+    </form>
+    <pre id="posted" data-json={JSON.encode!(@filter)}>{inspect(@filter)}</pre>
+    """
+  end
+
+  @impl true
+  def handle_event("filter", %{"filter" => filter}, socket) do
+    # LiveView marks the fields not yet touched (_unused_...): not filters.
+    filter = Map.reject(filter, fn {key, _value} -> String.starts_with?(key, "_unused_") end)
+    {:noreply, push_patch(socket, to: "/filters?" <> Query.encode(%{"filter" => filter}))}
+  end
+
+  # What a query would run with: a key resolved to today's days.
+  defp ranges(filter) do
+    day =
+      case Koyomi.Presets.to_date(filter["day"] || "") do
+        {:ok, date} -> Date.to_iso8601(date)
+        :error -> filter["day"]
+      end
+
+    period =
+      case filter["period"] do
+        key when is_binary(key) ->
+          case Koyomi.Presets.to_range(key) do
+            {:ok, range} -> "#{range.first}/#{range.last}"
+            :error -> key
+          end
+
+        %{"start" => first, "end" => last} ->
+          "#{first}/#{last}"
+
+        _none ->
+          ""
+      end
+
+    "#{day} · #{period}"
+  end
+end
+
 defmodule KoyomiDev.PlainController do
   @moduledoc "A page without LiveView: the pickers mount with mountKoyomi()."
   use Phoenix.Controller, formats: [:html]
@@ -512,6 +608,7 @@ defmodule KoyomiDev.Router do
     live("/", KoyomiDev.PickersLive)
     live("/days", KoyomiDev.DaysLive)
     live("/calendars", KoyomiDev.CalendarsLive)
+    live("/filters", KoyomiDev.FiltersLive)
     get("/plain", KoyomiDev.PlainController, :index)
   end
 end

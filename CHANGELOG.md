@@ -7,6 +7,43 @@ and Koyomi follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-17
+
+### Added
+
+- Filters and URLs: the pickers work with plain params as well as
+  with Ecto forms. See the new Filters and URLs guide.
+  - `keys` on the range picker names the two days in the posted map and
+    in the value: `keys={{"start", "end"}}` posts `field[start]` and
+    `field[end]`, and reads a value with those keys as the params have
+    it.
+  - `relative` on the date and range pickers: a chosen preset posts its
+    key (`last_7_days`, `this_month`, `yesterday`) instead of the days it
+    covers today, so that a filter in a shared link stays relative. The
+    field shows the preset and its days, a key as the value shows that
+    preset, and words typed in the popover that give a preset's days
+    choose that preset.
+  - Each preset has a key: the built-in ones their own
+    (`Koyomi.Presets.key/1`), the others the key of a keyword list
+    (`presets={[recent: {:last, 7, :days}]}`), which names the app's own
+    presets too.
+  - `Koyomi.Presets.to_date/2` and `to_range/2` give the days of a
+    preset or of its key on a day, and `Koyomi.Presets.parse/1` the
+    preset of a key.
+  - `Koyomi.DateRange` casts a map with `"start"` and `"end"`, and the
+    key of a built-in preset (today's days, in UTC).
+  - `Koyomi.Test.pick/3` picks a preset by its key in a relative picker.
+  - The development server has a Filters page.
+- Phoenix 1.7 and LiveView 1.1 are supported: Koyomi needs Phoenix
+  1.7.14 or 1.8 (it needed 1.8) and LiveView 1.1 or later (it needed
+  1.2). Koyomi needed no change of code for them. CI tests the oldest
+  versions.
+
+### Fixed
+
+- A browser test of the date picker's presets no longer fails on
+  Saturdays, when the development page's rules disable tomorrow.
+
 ## [0.1.2] - 2026-10-14
 
 ### Added

@@ -1,8 +1,12 @@
 defmodule Koyomi.MixProject do
   use Mix.Project
 
-  @version "0.1.2"
+  @version "0.2.0"
   @source_url "https://github.com/hattoriai/koyomi"
+
+  # KOYOMI_OLDEST=1 resolves the oldest Phoenix and LiveView that Koyomi
+  # supports, for the CI job that tests them.
+  @oldest System.get_env("KOYOMI_OLDEST") in ["1", "true"]
 
   def project do
     [
@@ -13,8 +17,9 @@ defmodule Koyomi.MixProject do
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
-      # For the code reloader of the development server (dev.exs).
-      listeners: [Phoenix.CodeReloader],
+      # For the code reloader of the development server (dev.exs). The
+      # listener is Phoenix 1.8's, so the oldest versions go without it.
+      listeners: if(@oldest, do: [], else: [Phoenix.CodeReloader]),
       dialyzer: [
         plt_add_apps: [:mix, :ex_unit, :esbuild, :postgrex],
         plt_core_path: "priv/plts",
@@ -51,11 +56,11 @@ defmodule Koyomi.MixProject do
       {:esbuild, "~> 0.10", only: :dev, runtime: false},
       {:ex_doc, "~> 0.34", only: :dev, runtime: false},
       {:lazy_html, "~> 0.1", only: :test},
-      {:phoenix, "~> 1.8"},
+      {:phoenix, if(@oldest, do: "~> 1.7.14", else: "~> 1.7.14 or ~> 1.8")},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.6", only: :dev},
       {:phoenix_ecto, "~> 4.6", only: [:dev, :test]},
-      {:phoenix_live_view, "~> 1.2"},
+      {:phoenix_live_view, if(@oldest, do: "~> 1.1.0", else: "~> 1.1")},
       {:postgrex, "~> 0.19", optional: true},
       {:stream_data, "~> 1.1", only: :test},
       {:tz, "~> 0.28", only: [:dev, :test]}
@@ -103,6 +108,7 @@ defmodule Koyomi.MixProject do
         "guides/quickstart.md",
         "guides/pickers.md",
         "guides/forms.md",
+        "guides/filters.md",
         "guides/rules.md",
         "guides/typing.md",
         "guides/calendars.md",
@@ -120,6 +126,7 @@ defmodule Koyomi.MixProject do
           "guides/quickstart.md",
           "guides/pickers.md",
           "guides/forms.md",
+          "guides/filters.md",
           "guides/rules.md",
           "guides/typing.md",
           "guides/calendars.md",

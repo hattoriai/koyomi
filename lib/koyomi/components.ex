@@ -56,8 +56,17 @@ defmodule Koyomi.Components do
 
   The value is a `Date`; the picker posts `YYYY-MM-DD`, and nothing (an
   empty string) when it is cleared.
+
+  With `relative`, a preset that a person chooses posts its key
+  (`"tomorrow"`, `"in_1_week"`) instead of its day, and a key as the value
+  shows that preset: for filters and URLs that keep "today" meaning today
+  (see the [Filters and URLs](filters.md) guide).
   """
   shared_attrs()
+
+  attr :relative, :boolean,
+    default: false,
+    doc: "when `true`, a chosen preset posts its key instead of its day, see `Koyomi.Presets`"
 
   def date_picker(assigns) do
     assigns |> prepare(:date) |> picker()
@@ -69,8 +78,15 @@ defmodule Koyomi.Components do
   ends it, with the range drawn as the pointer moves.
 
   Give it one field of the `Koyomi.DateRange` type (`field`), which it
-  posts as `field[from]` and `field[to]`, or two `:date` fields (`from` and
-  `to`), which it posts as they are. It posts only whole ranges: while one
+  posts as `field[from]` and `field[to]` (or with the names of `keys`), or
+  two `:date` fields (`from` and `to`), which it posts as they are. With a
+  `name` and no field, as in a filter, the value is a map with those keys,
+  as the params have it.
+
+  With `relative`, a preset that a person chooses posts its key
+  (`field=last_7_days`) instead of `field[from]` and `field[to]`, and a key
+  as the value shows that preset (see the [Filters and URLs](filters.md)
+  guide). It posts only whole ranges: while one
   end is chosen, the form keeps the previous value.
 
   The rules `:min_days`, `:max_days` and `:allow_disabled_in_range` apply
@@ -81,6 +97,16 @@ defmodule Koyomi.Components do
 
   attr :from, FormField, default: nil, doc: "the field of the first day, with `to`"
   attr :to, FormField, default: nil, doc: "the field of the last day, with `from`"
+
+  attr :keys, :any,
+    default: {"from", "to"},
+    doc:
+      ~s|the keys of the two days in the posted map and in the value: `{"start", "end"}` posts `field[start]` and `field[end]`|
+
+  attr :relative, :boolean,
+    default: false,
+    doc:
+      "when `true`, a chosen preset posts its key (`\"last_7_days\"`) instead of its days, see `Koyomi.Presets`"
 
   attr :nights, :boolean,
     default: false,
@@ -268,10 +294,11 @@ defmodule Koyomi.Components do
       min={@native_min}
       max={@native_max}
       required={@required}
-      disabled={@disabled}
+      disabled={@disabled or not is_nil(@relative_key)}
       readonly={@readonly}
       aria-label={label}
     />
+    <.preset_input :if={@relative} name={@input_name} key={@relative_key} disabled={@disabled} />
     """
   end
 
@@ -315,9 +342,28 @@ defmodule Koyomi.Components do
       max={@native_max}
       step={@native_step}
       required={@required}
-      disabled={@disabled}
+      disabled={@disabled or not is_nil(@relative_key)}
       readonly={@readonly}
       {@label_attrs}
+    />
+    <.preset_input :if={@relative} name={@input_name} key={@relative_key} disabled={@disabled} />
+    """
+  end
+
+  # A relative picker posts a chosen preset's key under the field's own
+  # name, and its days only when it has no preset: one of the two is enabled.
+  attr :name, :string, required: true
+  attr :key, :string, default: nil
+  attr :disabled, :boolean, default: false
+
+  defp preset_input(assigns) do
+    ~H"""
+    <input
+      type="hidden"
+      data-part="preset"
+      name={@name}
+      value={@key || ""}
+      disabled={@disabled or is_nil(@key)}
     />
     """
   end
@@ -332,6 +378,8 @@ defmodule Koyomi.Components do
     today = Rules.today(rules)
     input_name = input_name(assigns, field)
     value = value(assigns, field, kind)
+    assigns = assign(assigns, :keys, range_keys(Map.get(assigns, :keys)))
+    relative_key = relative_key(assigns, kind, value, today, input_name)
     id = assigns.id || default_id(assigns, field, input_name, kind)
     {rest, described_by, aria_invalid} = take_aria(assigns.rest)
     invalid = aria_invalid || invalid?(field)
@@ -347,8 +395,10 @@ defmodule Koyomi.Components do
       |> assign(:input_id, field && field.id)
       |> assign(:label_attrs, label_attrs(assigns.label_id, label))
       |> assign(:required, assigns.required)
+      |> assign(:relative, Map.get(assigns, :relative, false))
+      |> assign(:relative_key, relative_key)
 
-    wire = wire(kind, value, assigns)
+    wire = relative_key || wire(kind, value, assigns)
 
     assigns
     |> assign(:wire, JSON.encode!(wire))
@@ -369,6 +419,46 @@ defmodule Koyomi.Components do
     )
     |> assign_native(kind, wire, rules)
   end
+
+  # The keys of a range's two days, as strings.
+  defp range_keys(nil), do: {"from", "to"}
+
+  defp range_keys({from, to})
+       when (is_binary(from) or is_atom(from)) and (is_binary(to) or is_atom(to)),
+       do: {to_string(from), to_string(to)}
+
+  defp range_keys(other) do
+    raise ArgumentError,
+          "Koyomi.Components: `keys` must be a tuple of two keys, such as {\"start\", \"end\"}, got: #{inspect(other)}"
+  end
+
+  # The key of the preset that the value names, in a relative picker.
+  defp relative_key(%{relative: true} = assigns, kind, value, today, input_name)
+       when kind in [:date, :range] do
+    if is_nil(input_name) do
+      raise ArgumentError,
+            "Koyomi.Components: a relative #{kind} picker posts a preset's key under one name: give it a `field` or a `name`"
+    end
+
+    key =
+      if is_atom(value) and not is_nil(value) and not is_boolean(value),
+        do: Atom.to_string(value),
+        else: value
+
+    with true <- is_binary(key),
+         keys =
+           assigns
+           |> presets(kind, today, assigns.first_day || 1)
+           |> List.wrap()
+           |> Enum.map(& &1["key"]),
+         true <- key in keys do
+      key
+    else
+      _other -> nil
+    end
+  end
+
+  defp relative_key(_assigns, _kind, _value, _today, _input_name), do: nil
 
   defp kind_class(:calendar, %{select: select}) when is_binary(select), do: "calendar"
   defp kind_class(kind, _assigns), do: Atom.to_string(kind)
@@ -432,7 +522,7 @@ defmodule Koyomi.Components do
   defp wire(:range, _value, %{from: %FormField{} = from, to: %FormField{} = to}),
     do: %{"from" => iso_date(from.value), "to" => iso_date(to.value)}
 
-  defp wire(:range, value, _assigns), do: range_wire(value)
+  defp wire(:range, value, assigns), do: range_wire(value, assigns.keys)
 
   defp wire(:dates, value, _assigns), do: dates_wire(value)
 
@@ -462,7 +552,7 @@ defmodule Koyomi.Components do
   defp wire(:recurrence, %Recurrence{} = rule, _assigns), do: Recurrence.to_string(rule)
   defp wire(:recurrence, value, _assigns), do: blank_to_nil(value)
 
-  defp wire(:calendar, value, %{select: "range"}), do: range_wire(value)
+  defp wire(:calendar, value, %{select: "range"}), do: range_wire(value, {"from", "to"})
   defp wire(:calendar, value, %{select: "dates"}), do: dates_wire(value)
   defp wire(:calendar, value, _assigns), do: iso_date(value)
 
@@ -474,23 +564,33 @@ defmodule Koyomi.Components do
 
   defp iso_date(value), do: blank_to_nil(value)
 
-  defp range_wire(%Date.Range{} = range), do: DateRange.to_params(range)
+  defp range_wire(%Date.Range{} = range, _keys), do: DateRange.to_params(range)
 
-  defp range_wire(%{} = map) when not is_struct(map) do
+  # A map of the params (with the picker's keys) or of from and to.
+  defp range_wire(%{} = map, {from_key, to_key}) when not is_struct(map) do
     %{
-      "from" => iso_date(Map.get(map, "from", Map.get(map, :from))),
-      "to" => iso_date(Map.get(map, "to", Map.get(map, :to)))
+      "from" => iso_date(fetch_end(map, from_key, "from")),
+      "to" => iso_date(fetch_end(map, to_key, "to"))
     }
   end
 
-  defp range_wire(text) when is_binary(text) do
+  defp range_wire(text, _keys) when is_binary(text) do
     case String.split(text, "/") do
       [from, to] -> %{"from" => blank_to_nil(from), "to" => blank_to_nil(to)}
       _other -> %{"from" => nil, "to" => nil}
     end
   end
 
-  defp range_wire(_value), do: %{"from" => nil, "to" => nil}
+  defp range_wire(_value, _keys), do: %{"from" => nil, "to" => nil}
+
+  # One end of a range, under the picker's key (a string or an atom key),
+  # else under from or to.
+  defp fetch_end(map, key, default_key) do
+    Enum.find_value([key, default_key], fn key ->
+      Map.get(map, key) ||
+        Enum.find_value(map, fn {k, v} -> is_atom(k) and Atom.to_string(k) == key and v end)
+    end)
+  end
 
   defp dates_wire(list) when is_list(list) do
     list |> Enum.map(&iso_date/1) |> Enum.reject(&is_nil/1) |> Enum.uniq() |> Enum.sort()
@@ -520,7 +620,7 @@ defmodule Koyomi.Components do
   defp native(kind, wire, rules, _assigns) when kind in [:date, :range, :dates] do
     min = rules |> Rules.min_date() |> iso()
     max = rules |> Rules.max_date() |> iso()
-    {"date", if(kind == :date, do: wire), min, max, nil}
+    {"date", if(kind == :date and date_wire?(wire), do: wire), min, max, nil}
   end
 
   defp native(:month, wire, rules, _assigns),
@@ -546,6 +646,8 @@ defmodule Koyomi.Components do
 
   defp native(:calendar, wire, _rules, _assigns),
     do: {"hidden", calendar_value(wire), nil, nil, nil}
+
+  defp date_wire?(wire), do: is_binary(wire) and match?({:ok, _date}, Date.from_iso8601(wire))
 
   defp bound(rules, :min, fun), do: rules |> Rules.min_date() |> then(&(&1 && fun.(&1)))
   defp bound(rules, :max, fun), do: rules |> Rules.max_date() |> then(&(&1 && fun.(&1)))
@@ -594,10 +696,12 @@ defmodule Koyomi.Components do
 
   defp range_inputs(:range, wire, assigns) do
     name = assigns.input_name
+    {from_key, to_key} = assigns.keys
+    wire = if is_map(wire), do: wire, else: %{}
 
     [
-      {"from", name && name <> "[from]", wire["from"], part_label(assigns, "from")},
-      {"to", name && name <> "[to]", wire["to"], part_label(assigns, "to")}
+      {"from", name && name <> "[#{from_key}]", wire["from"], part_label(assigns, "from")},
+      {"to", name && name <> "[#{to_key}]", wire["to"], part_label(assigns, "to")}
     ]
   end
 
@@ -670,6 +774,7 @@ defmodule Koyomi.Components do
       "hourCycle" => Map.get(assigns, :hour_cycle),
       "ambiguous" => assigns |> Map.get(:ambiguous) |> atom_string(),
       "nights" => Map.get(assigns, :nights, false),
+      "relative" => Map.get(assigns, :relative, false),
       "select" => Map.get(assigns, :select),
       "start" => start(Map.get(assigns, :start), context.today)
     }
