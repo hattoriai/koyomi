@@ -19,7 +19,7 @@ development server and run the tests is in the README, under
 
 Search the open and closed issues first: the idea may already be planned,
 or turned down for a reason given there. The known gaps are in
-[BACKLOG.md](BACKLOG.md), and the known limits in the
+[BACKLOG.md](https://github.com/hattoriai/koyomi/blob/main/BACKLOG.md), and the known limits in the
 [Known limits](guides/limits.md) guide.
 
 ## When a pull request needs an issue first
@@ -100,4 +100,4 @@ rest.
 ## License
 
 By contributing, you agree that your contribution is released under the
-MIT License of the project (see [LICENSE](LICENSE)).
+MIT License of the project (see [LICENSE](https://github.com/hattoriai/koyomi/blob/main/LICENSE)).
