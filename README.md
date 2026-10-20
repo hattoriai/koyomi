@@ -251,6 +251,12 @@ task) builds the bundle, checks that `priv/static` holds only the four
 bundle files (`mix koyomi.release_check`), publishes to Hex, and tags
 and pushes `v<version>`.
 
+## Contributing
+
+See [CONTRIBUTING.md](https://github.com/hattoriai/koyomi/blob/main/CONTRIBUTING.md): when a change needs an issue
+first, and what a pull request needs. Report a security problem
+privately, as [SECURITY.md](https://github.com/hattoriai/koyomi/blob/main/SECURITY.md) says.
+
 ## License
 
 Koyomi is released under the MIT License. See `LICENSE`.

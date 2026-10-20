@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/hattoriai/koyomi/security/advisories/new
+    about: Report a security problem privately, not in a public issue.
+  - name: Documentation
+    url: https://hexdocs.pm/koyomi
+    about: The guides cover the pickers, forms, rules, calendars, time zones, recurrence and more.
