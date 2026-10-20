@@ -1,0 +1,111 @@
+name: Bug report
+description: Something in Koyomi does not work as the docs say.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. A security problem goes to a private report instead (see SECURITY.md).
+
+  - type: input
+    id: koyomi
+    attributes:
+      label: Koyomi version
+      description: From `mix.lock`, or `mix deps | grep koyomi`.
+      placeholder: "0.2.0"
+    validations:
+      required: true
+
+  - type: input
+    id: stack
+    attributes:
+      label: Elixir, OTP, Phoenix and LiveView versions
+      placeholder: "Elixir 1.20.1, OTP 29, Phoenix 1.8.1, LiveView 1.1.14"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where it happens
+      options:
+        - In the browser (a picker, the calendar, typing)
+        - On the server (a type, Koyomi.Rules, Koyomi.Changeset, Koyomi.Recurrence)
+        - Both
+        - Koyomi.Test
+        - mix koyomi.install
+    validations:
+      required: true
+
+  - type: input
+    id: picker
+    attributes:
+      label: Picker
+      description: The picker, if any.
+      placeholder: "date_range_picker"
+
+  - type: input
+    id: locale
+    attributes:
+      label: Locale, calendar system and time zone
+      description: The `locale`, `calendar` and `time_zone` of the picker or the rules, and the time zone of the browser and of the server. Dates often go wrong only in some of them.
+      placeholder: "ja-JP, japanese calendar, Asia/Tokyo; browser in Europe/Lisbon, server in UTC"
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and OS
+      description: For what the browser shows or does.
+      placeholder: "Safari 26, iOS 26"
+
+  - type: input
+    id: database
+    attributes:
+      label: Database and adapter
+      description: For an Ecto type that is stored (a `daterange`, a `tstzrange`, a range as text or JSON).
+      placeholder: "PostgreSQL 16, postgrex 0.21"
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: The smallest picker or code that shows it
+      description: The picker and its attributes and rules, the schema field and the changeset, or the call that gives the wrong result. Or a link to a small repository.
+      render: elixir
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps
+      placeholder: |
+        1. Open the range picker
+        2. Choose 30 March, then 2 April
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened
+      description: The value posted, the error and its stacktrace, from the server log or the browser console.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I use a release from Hex, not `main`.
+          required: true
+        - label: I searched the open and closed issues, and the Known limits guide.
+          required: true
