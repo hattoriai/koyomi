@@ -7,6 +7,20 @@ and Koyomi follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- The Sumi theme follows Sumi's seven themes and their accents: where a
+  theme's accent is the hue of the holiday or of a tone, that one takes
+  another hue in that theme (Smoke, Stone, Lacquer, Snow, Silk). `mix dev`
+  shows every page in each (`?sumi=smoke`). See the Theming guide.
+
+### Fixed
+
+- The Sumi theme gave Sumi's dark themes other than Ink the light
+  palette, and Sumi's light themes other than Paper the dark one on a
+  system in dark mode. Its warning tone, on a page without Sumi, is
+  Sumi's warning.
+
 ## [0.2.0] - 2026-10-17
 
 ### Added
