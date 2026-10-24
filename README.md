@@ -210,9 +210,10 @@ empties `priv/static` and writes the four files of the package:
 (`/`), day content from a fake availability service, slow and async
 (`/days`), the calendar systems of the world (`/calendars`), a page
 without LiveView (`/plain`), and the Sumi theme at `/?theme=sumi` (and
-`&dark=1`). Every page takes `locale`, `calendar` and `zone` query
-params. Set `PORT` for another port. An esbuild watcher rebuilds the
-bundle, and the page reloads.
+`&dark=1`), or on one of Sumi's seven themes at `?sumi=smoke`. Every
+page takes `locale`, `calendar` and `zone` query params. Set `PORT` for
+another port. An esbuild watcher rebuilds the bundle, and the page
+reloads.
 
 ### Tests
 

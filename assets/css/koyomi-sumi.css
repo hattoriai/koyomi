@@ -19,8 +19,9 @@
  *
  * Dark and light: on a page with the Sumi themes, the pickers follow them
  * (their colours change with data-theme). Without them, the built-in
- * palette follows the data-theme attribute ("dark" or "light") first, then
- * prefers-color-scheme. The mapping is resolved again on every element
+ * palette follows the data-theme attribute (Sumi's dark themes "dark",
+ * "smoke", "stone", "lacquer", or its light ones "light", "snow", "silk")
+ * first, then prefers-color-scheme. The mapping is resolved again on every element
  * with a data-theme attribute, so a part of the page with its own theme
  * gets it.
  */
@@ -36,11 +37,15 @@
   --koyomi-sumi-info: oklch(55% 0.18 245);
   --koyomi-sumi-success: oklch(55% 0.16 155);
   --koyomi-sumi-error: oklch(55% 0.22 25);
+  --koyomi-sumi-warning: oklch(68% 0.16 70);
 }
 
-/* The Sumi palette, dark: data-theme="dark", or a dark preference on a page
-   that does not ask for light. */
-[data-theme="dark"] {
+/* The Sumi palette, dark: Sumi's dark themes (Ink, Smoke, Stone, Lacquer),
+   or a dark preference on a page that does not ask for a light one. */
+[data-theme="dark"],
+[data-theme="smoke"],
+[data-theme="stone"],
+[data-theme="lacquer"] {
   --koyomi-sumi-base-100: oklch(12% 0.003 270);
   --koyomi-sumi-base-200: oklch(16% 0.004 270);
   --koyomi-sumi-base-300: oklch(20% 0.005 270);
@@ -49,10 +54,11 @@
   --koyomi-sumi-info: oklch(62% 0.15 245);
   --koyomi-sumi-success: oklch(62% 0.14 155);
   --koyomi-sumi-error: oklch(58% 0.22 25);
+  --koyomi-sumi-warning: oklch(72% 0.16 70);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  :root:not([data-theme="light"], [data-theme="snow"], [data-theme="silk"]) {
     --koyomi-sumi-base-100: oklch(12% 0.003 270);
     --koyomi-sumi-base-200: oklch(16% 0.004 270);
     --koyomi-sumi-base-300: oklch(20% 0.005 270);
@@ -61,6 +67,7 @@
     --koyomi-sumi-info: oklch(62% 0.15 245);
     --koyomi-sumi-success: oklch(62% 0.14 155);
     --koyomi-sumi-error: oklch(58% 0.22 25);
+    --koyomi-sumi-warning: oklch(72% 0.16 70);
   }
 }
 
@@ -93,7 +100,7 @@
   --koyomi-invalid: color-mix(in oklab, var(--color-error, var(--koyomi-sumi-error)) 85%, var(--koyomi-text));
   --koyomi-tone-accent: var(--color-sumi-blade, var(--sumi-accent, #e84a1c));
   --koyomi-tone-success: color-mix(in oklab, var(--color-success, var(--koyomi-sumi-success)) 85%, var(--koyomi-text));
-  --koyomi-tone-warning: color-mix(in oklab, var(--color-warning, oklch(75% 0.16 85)) 75%, var(--koyomi-text));
+  --koyomi-tone-warning: color-mix(in oklab, var(--color-warning, var(--koyomi-sumi-warning)) 75%, var(--koyomi-text));
   --koyomi-tone-danger: color-mix(in oklab, var(--color-error, var(--koyomi-sumi-error)) 85%, var(--koyomi-text));
   --koyomi-tone-muted: var(--sumi-text-muted, var(--sumi-muted, var(--koyomi-sumi-muted)));
   --koyomi-focus-ring: 0 0 0 2px var(--koyomi-background), 0 0 0 4px var(--color-sumi-blade, var(--sumi-accent, #e84a1c));
@@ -111,4 +118,40 @@
   --koyomi-radius: var(--radius-box, var(--sumi-radius, 0.25rem));
   --koyomi-space: 0.5rem;
   --koyomi-icon-size: 16px;
+}
+
+/* Sumi's themes and their accents. The holiday is Sumi's ember, a red, and
+   the tones are the status colours; where a theme's accent is of their hue,
+   they take another in that theme, so that a holiday is not mistaken for
+   the selection or the range, nor a tone for the accent: */
+
+/* Smoke: jade. The holiday is Ink's ember, and success a leaf green. Its
+   page is lighter than Ink's: danger and an invalid value take more of the
+   text, for contrast. */
+[data-theme="smoke"] {
+  --koyomi-holiday: color-mix(in oklab, #ff6b3d 70%, var(--koyomi-text));
+  --koyomi-tone-success: color-mix(in oklab, oklch(74% 0.17 132) 85%, var(--koyomi-text));
+  --koyomi-tone-danger: color-mix(in oklab, var(--color-error, var(--koyomi-sumi-error)) 72%, var(--koyomi-text));
+  --koyomi-invalid: color-mix(in oklab, var(--color-error, var(--koyomi-sumi-error)) 72%, var(--koyomi-text));
+}
+
+/* Stone: gold. Warning is orange, and the holiday Lacquer's vermilion, a
+   red, apart from the orange. */
+[data-theme="stone"] {
+  --koyomi-holiday: color-mix(in oklab, oklch(70% 0.17 28) 70%, var(--koyomi-text));
+  --koyomi-tone-warning: color-mix(in oklab, oklch(72% 0.16 52) 85%, var(--koyomi-text));
+}
+
+/* Lacquer: vermilion, the hue of the error. Danger and an invalid value
+   are a crimson. */
+[data-theme="lacquer"] {
+  --koyomi-tone-danger: color-mix(in oklab, oklch(66% 0.2 355) 85%, var(--koyomi-text));
+  --koyomi-invalid: color-mix(in oklab, oklch(66% 0.2 355) 85%, var(--koyomi-text));
+}
+
+/* Snow and Silk: indigo and lotus pink. The holiday is Paper's ember, a
+   little darker, for contrast on the range. */
+[data-theme="snow"],
+[data-theme="silk"] {
+  --koyomi-holiday: color-mix(in oklab, #ff6b3d 60%, var(--koyomi-text));
 }

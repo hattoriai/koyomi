@@ -8,7 +8,8 @@
 #
 # Query params of every page: `locale` (a BCP 47 locale), `calendar` (an
 # Intl calendar id), `zone` (an IANA time zone), `theme=sumi`,
-# `icons=custom` (icons of the app, with setIcons).
+# `sumi=smoke` (the Sumi theme on one of Sumi's seven themes), `icons=custom`
+# (icons of the app, with setIcons).
 #
 # Environment:
 #
@@ -106,7 +107,7 @@ defmodule KoyomiDev.Rooms do
            [
              label: "€#{price}",
              tone: :success,
-             marks: [:warning],
+             marks: [:accent, :warning],
              title: "2 rooms left, €#{price}"
            ]}
 
@@ -145,12 +146,63 @@ end
 defmodule KoyomiDev.Layouts do
   @moduledoc """
   The root layout: the style sheets, the import map and the LiveSocket.
-  `?theme=sumi` also loads koyomi-sumi.css.
+  `?theme=sumi` also loads koyomi-sumi.css; `?sumi=smoke` (any of Sumi's
+  seven themes) loads it on that theme of Sumi, to see every picker in each.
   """
   use Phoenix.Component
 
+  # Sumi's themes, as the pickers read them: the page, the surface, the
+  # line, the text, the muted text's alpha, the accent (blade), the ember and
+  # the text on the accent (Sumi's own CSS needs Tailwind, which this app has
+  # not; these are its values). The status colours are the built-in
+  # palette's, dark or light.
+  @sumi_themes [
+    {"dark", "Ink", "oklch(12% 0.003 270)", "oklch(16% 0.004 270)", "oklch(20% 0.005 270)",
+     "oklch(95% 0.012 85)", 0.5, "#e84a1c", "#ff6b3d", "oklch(12% 0.003 270)"},
+    {"smoke", "Smoke", "oklch(27% 0.005 270)", "oklch(30.5% 0.006 270)", "oklch(34% 0.007 270)",
+     "oklch(92% 0.01 85)", 0.62, "oklch(72% 0.13 168)", "oklch(78% 0.11 168)",
+     "oklch(27% 0.005 270)"},
+    {"stone", "Stone", "oklch(20% 0.006 70)", "oklch(23.5% 0.007 70)", "oklch(27% 0.008 70)",
+     "oklch(95% 0.01 85)", 0.52, "oklch(78% 0.13 82)", "oklch(83% 0.11 85)",
+     "oklch(20% 0.006 70)"},
+    {"lacquer", "Lacquer", "oklch(14% 0.022 25)", "oklch(18% 0.026 25)", "oklch(22% 0.03 25)",
+     "oklch(93% 0.016 75)", 0.53, "oklch(63% 0.21 24)", "oklch(70% 0.17 28)",
+     "oklch(14% 0.022 25)"},
+    {"light", "Paper", "oklch(96% 0.01 85)", "oklch(93% 0.012 85)", "oklch(89% 0.014 80)",
+     "oklch(15% 0.003 270)", 0.65, "#e84a1c", "#ff6b3d", "oklch(12% 0.003 270)"},
+    {"snow", "Snow", "oklch(99.5% 0.001 270)", "oklch(97% 0.003 270)", "oklch(92.5% 0.005 270)",
+     "oklch(20% 0.006 270)", 0.65, "oklch(50% 0.17 262)", "oklch(58% 0.16 262)",
+     "oklch(100% 0 0)"},
+    {"silk", "Silk", "oklch(97.5% 0.012 350)", "oklch(95% 0.016 350)", "oklch(91.5% 0.02 350)",
+     "oklch(22% 0.012 350)", 0.65, "oklch(56% 0.21 358)", "oklch(64% 0.2 358)", "oklch(100% 0 0)"}
+  ]
+
+  defp sumi_style(id) do
+    case List.keyfind(@sumi_themes, id, 0) do
+      {_, _, page, surface, line, text, muted, accent, ember, accent_ink} ->
+        """
+        :root {
+          --color-base-100: #{page}; --color-base-200: #{surface}; --color-base-300: #{line};
+          --color-base-content: #{text}; --sumi-text-muted: oklch(from #{text} l c h / #{muted});
+          --color-sumi-blade: #{accent}; --color-sumi-ember: #{ember}; --color-primary-content: #{accent_ink};
+        }
+        """
+
+      nil ->
+        ""
+    end
+  end
+
   def root(assigns) do
-    assigns = assign(assigns, :sumi, assigns.conn.params["theme"] == "sumi")
+    look = assigns.conn.params["sumi"]
+    look = if List.keymember?(@sumi_themes, look, 0), do: look
+
+    assigns =
+      assign(assigns,
+        sumi: assigns.conn.params["theme"] == "sumi" or look != nil,
+        look: look,
+        themes: @sumi_themes
+      )
 
     ~H"""
     <!DOCTYPE html>
@@ -162,6 +214,7 @@ defmodule KoyomiDev.Layouts do
         <title>Koyomi development</title>
         <link rel="stylesheet" href="/assets/koyomi.css" />
         <link :if={@sumi} rel="stylesheet" href="/assets/koyomi-sumi.css" />
+        {@look && Phoenix.HTML.raw("<style>" <> sumi_style(@look) <> "</style>")}
         <style>
           body { font-family: system-ui, sans-serif; margin: 0; background: #fafaf9; color: #1c1917; }
           body.sumi { background: var(--koyomi-background); color: var(--koyomi-text); font-family: var(--koyomi-font); }
@@ -209,10 +262,13 @@ defmodule KoyomiDev.Layouts do
           }
         </script>
       </head>
-      <body class={@sumi && "sumi"} data-theme={@conn.params["dark"] && "dark"}>
+      <body class={@sumi && "sumi"} data-theme={@look || (@conn.params["dark"] && "dark")}>
         <main>
           <nav>
             <a href="/">Pickers</a><a href="/days">Day content</a><a href="/calendars">Calendars</a><a href="/filters">Filters</a><a href="/plain">Without LiveView</a><a href="/?theme=sumi">Sumi theme</a>
+          </nav>
+          <nav :if={@sumi} aria-label="Sumi's themes">
+            Sumi: <a :for={{id, name, _, _, _, _, _, _, _, _} <- @themes} href={"?sumi=#{id}"} aria-current={@look == id && "page"}>{name}</a>
           </nav>
           {@inner_content}
         </main>
@@ -383,7 +439,7 @@ defmodule KoyomiDev.DaysLive do
       <.datetime_picker field={@form[:slot]} label_id="slot-label" slots time_zone={@zone} rules={[min: :today]} locale={@locale} />
     </.form>
     <label class="label">A calendar of bookings</label>
-    <.calendar id="bookings" days holidays={["PT", "GB"]} months={2} locale={@locale} />
+    <.calendar id="bookings" days select="range" holidays={["PT", "GB"]} months={2} locale={@locale} />
     <div class="row">
       <button phx-click="refresh">Refresh the days</button>
       <button phx-click="set">Set the room to next weekend</button>

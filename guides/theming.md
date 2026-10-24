@@ -176,6 +176,26 @@ The main mappings:
 Today is marked in ink, not in the blade: a Sumi page keeps the blade
 for what needs attention, here the selection.
 
+### Sumi's themes
+
+Each of Sumi's seven themes (Ink, Smoke, Stone and Lacquer; Paper, Snow
+and Silk) has its own accent, and the selection, the range, the focus
+ring and the accent tone follow it. The holiday is Sumi's ember, a red,
+and the tones are the status colours; where a theme's accent is of their
+hue, they take another in that theme, so that a holiday is not mistaken
+for the selection or the range, nor a tone for the accent:
+
+| Theme | Accent | Changed |
+|---|---|---|
+| Smoke | jade | the holiday is Ink's ember; success is a leaf green; danger and an invalid value are lighter, for contrast on its page |
+| Stone | gold | warning is orange, and the holiday a vermilion |
+| Lacquer | vermilion | danger and an invalid value are a crimson |
+| Snow | indigo | the holiday is Paper's ember |
+| Silk | lotus pink | the holiday is Paper's ember |
+
+The development app (`mix dev`) shows every page in each: `?sumi=smoke`,
+or the links under its menu on `?theme=sumi`.
+
 Sizes and spaces have no Sumi token, so the theme gives them the Sumi
 values: `--koyomi-small` is `0.8125em` and `--koyomi-icon-size` is
 `16px`. The field height, the day size, the field padding and the
@@ -191,11 +211,12 @@ On a page with the Sumi daisyUI themes, the pickers follow them, because
 their colours change with `data-theme`. Without them, the built-in
 palette is chosen:
 
-1. by the `data-theme` attribute: `"dark"` gives the dark palette, and
-   any other value the light one;
+1. by the `data-theme` attribute: Sumi's dark themes (`"dark"`,
+   `"smoke"`, `"stone"`, `"lacquer"`) give the dark palette, and any
+   other value the light one;
 2. else, on the root element, by `prefers-color-scheme`: a dark
-   preference gives the dark palette, unless the root has
-   `data-theme="light"`.
+   preference gives the dark palette, unless the root has one of Sumi's
+   light themes (`data-theme="light"`, `"snow"` or `"silk"`).
 
 The palette and the mapping are resolved again on every element with a
 `data-theme` attribute, so a part of the page with its own theme gets
