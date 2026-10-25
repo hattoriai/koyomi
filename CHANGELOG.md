@@ -7,6 +7,8 @@ and Koyomi follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-10-25
+
 ### Added
 
 - The Sumi theme follows Sumi's seven themes and their accents: where a
@@ -21,9 +23,6 @@ and Koyomi follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   again only when the months shown changed, which a refresh does not do.
   It now asks for the days of the months shown at once (a closed popover
   still asks when it opens).
-
-### Fixed
-
 - The Sumi theme gave Sumi's dark themes other than Ink the light
   palette, and Sumi's light themes other than Paper the dark one on a
   system in dark mode. Its warning tone, on a page without Sumi, is
