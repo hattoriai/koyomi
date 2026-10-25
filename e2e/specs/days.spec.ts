@@ -42,6 +42,15 @@ test.describe("day content from the LiveView", () => {
     await expect(picker(page, "booking_slot_picker").locator(".koyomi-popover")).toBeVisible();
   });
 
+  test("days refreshed by the server come again, on the months shown", async ({ page }) => {
+    const calendar = picker(page, "bookings");
+    await expect(calendar.locator(".koyomi-day-label").first()).toBeVisible();
+    await page.getByRole("button", { name: "Refresh the calendar" }).click();
+    // The same months, asked for again: their labels come back.
+    await expect(calendar.locator(".koyomi-calendar")).not.toHaveAttribute("aria-busy", "true");
+    await expect(calendar.locator(".koyomi-day-label").first()).toBeVisible();
+  });
+
   test("a calendar on the page, with holidays of two countries", async ({ page }) => {
     const calendar = picker(page, "bookings");
     await expect(calendar.locator(".koyomi-grid")).toHaveCount(2);

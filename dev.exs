@@ -442,6 +442,7 @@ defmodule KoyomiDev.DaysLive do
     <.calendar id="bookings" days select="range" holidays={["PT", "GB"]} months={2} locale={@locale} />
     <div class="row">
       <button phx-click="refresh">Refresh the days</button>
+      <button phx-click="refresh_calendar">Refresh the calendar</button>
       <button phx-click="set">Set the room to next weekend</button>
       <button phx-click="open">Open the slot picker</button>
     </div>
@@ -464,6 +465,9 @@ defmodule KoyomiDev.DaysLive do
 
   def handle_event("refresh", _params, socket),
     do: {:noreply, Koyomi.Live.refresh_days(socket, "booking_room_picker")}
+
+  def handle_event("refresh_calendar", _params, socket),
+    do: {:noreply, Koyomi.Live.refresh_days(socket, "bookings")}
 
   def handle_event("set", _params, socket) do
     today = Date.utc_today()
