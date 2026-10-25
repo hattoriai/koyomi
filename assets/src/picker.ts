@@ -1182,7 +1182,10 @@ export class Picker {
     this.calendar?.root.removeAttribute("aria-busy");
     this.loaded.clear();
     this.content.clear();
-    this.calendar?.setOptions({});
+    // The months shown are the same, so the calendar would not say them
+    // again by itself: it asks for their days (a closed popover's load
+    // when it opens).
+    this.calendar?.announceShown();
   }
 
   private onHover(day: Day | null): void {
