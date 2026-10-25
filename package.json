@@ -1,6 +1,6 @@
 {
   "name": "koyomi",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "license": "MIT",
   "module": "./priv/static/koyomi.esm.js",
   "main": "./priv/static/koyomi.cjs.js",
