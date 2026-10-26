@@ -2,6 +2,18 @@
 
 ![Koyomi — Dates for Phoenix](https://raw.githubusercontent.com/hattoriai/koyomi/main/media/banner.png)
 
+<p>
+  <a href="https://hex.pm/packages/koyomi">
+    <img alt="Hex Version" src="https://img.shields.io/hexpm/v/koyomi.svg">
+  </a>
+  <a href="https://hexdocs.pm/koyomi">
+    <img src="https://img.shields.io/badge/docs-hexdocs-blue" alt="HexDocs">
+  </a>
+  <a href="https://github.com/hattoriai/koyomi/actions">
+    <img alt="CI Status" src="https://github.com/hattoriai/koyomi/actions/workflows/ci.yml/badge.svg">
+  </a>
+</p>
+
 Koyomi (暦, "calendar") is dates for Phoenix. It gives your app:
 
 * pickers for LiveView forms: a day, a range of days, several days, a
