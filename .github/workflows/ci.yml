@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Erlang and Elixir exactly as in .tool-versions.
       - uses: erlef/setup-beam@v1
@@ -83,7 +83,7 @@ jobs:
       KOYOMI_OLDEST: "1"
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: erlef/setup-beam@v1
         id: beam
@@ -124,7 +124,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v7
         with:
@@ -144,14 +144,17 @@ jobs:
   # One job for each browser engine. The Chromium job keeps the name "e2e".
   e2e:
     name: ${{ matrix.browser == 'chromium' && 'e2e' || format('e2e ({0})', matrix.browser) }}
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest is Ubuntu 26.04, and Playwright 1.56.1 cannot
+    # install browsers there. Change this when e2e/package.json moves to a
+    # Playwright release that supports ubuntu26.04.
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
         browser: [chromium, firefox, webkit]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Erlang and Elixir exactly as in .tool-versions.
       - uses: erlef/setup-beam@v1
